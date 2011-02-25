@@ -3,12 +3,12 @@ package cuboidLocale;
 import java.util.ArrayList;
 
 public class BookmarkedResult{
-  ArrayList<PrimitiveCuboid> results;
-  QuadNode bookmark;
+  public ArrayList<PrimitiveCuboid> results;
+  public QuadNode bookmark;
   
-  BookmarkedResult(){}
+  public BookmarkedResult(){}
   
-  BookmarkedResult(QuadNode node, ArrayList<PrimitiveCuboid> c){
+  public BookmarkedResult(QuadNode node, ArrayList<PrimitiveCuboid> c){
     bookmark = node;
     results = c;
   }

@@ -35,7 +35,11 @@ public class Test{
       y+=(rng.nextInt() % 64);
       z+=(rng.nextInt() % 64);
       res = tree.relatedSearch(res.bookmark, x, y, z);
-      int size = res.results.size(); 
+      int size = res.results.size();
+      
+      for( PrimitiveCuboid shop : res.results)
+    	  System.err.println("Shop Searcherd");
+      
       if(size > 1){
         System.err.println("S:" + size);
       }

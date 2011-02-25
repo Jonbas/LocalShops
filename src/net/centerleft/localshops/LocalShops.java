@@ -1,7 +1,9 @@
 package net.centerleft.localshops;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +16,7 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
+import cuboidLocale.BookmarkedResult;
 import cuboidLocale.QuadTree;
 
 /**
@@ -33,7 +36,11 @@ public class LocalShops extends JavaPlugin {
 	static String shopsPath = "shops/";
 	static File shopsDir;
 	
+	public Map<String, BookmarkedResult> playerResult;  //synchronized result buffer hash
+	
 	public void onEnable() {
+		
+		playerResult = Collections.synchronizedMap(new HashMap<String, BookmarkedResult>());
 
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
