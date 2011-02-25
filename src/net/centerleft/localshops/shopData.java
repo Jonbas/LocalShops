@@ -114,10 +114,6 @@ public class shopData {
 									ly = Long.parseLong(args[1].trim());
 									lz = Long.parseLong(args[2].trim());
 									
-									//DEBUG
-									System.out.println("Shop location: " + lx + " " + ly + " " + lz);
-									
-									
 									xyzA[0] = lx - (shopSize / 2);
 									xyzB[0] = lx + (shopSize / 2);
 									xyzA[2] = lz - (shopSize / 2);
@@ -159,10 +155,6 @@ public class shopData {
 				LocalShops.cuboidTree.insert(tempShopCuboid);
 
 				shops.put(shopName[0], tempShop );
-				
-				//DEBUG
-				System.out.println("Inserting Shop into Tree");
-				System.out.println("shopname: " + tempShopCuboid.name );
 				
 		    } catch (FileNotFoundException e) {
 				System.out.println( LocalShops.pluginName + ": Error - Could not read file " + shop.getName() );

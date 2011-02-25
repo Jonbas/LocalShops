@@ -3,6 +3,7 @@ package net.centerleft.localshops;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -66,10 +67,12 @@ public class ShopsPlayerListener extends PlayerListener {
 					} 
 				}
 	
-				synchronized(PlayerData.playerShopList) {
+				synchronized(PlayerData.playerShopList.get(playerName)) {
 					//check to see if we've left any shops
-					for( String checkShopName : PlayerData.playerShopList.get(playerName)) {
-
+					Iterator itr = PlayerData.playerShopList.get(playerName).iterator();
+					while( itr.hasNext()) {
+						String checkShopName = itr.next().toString();
+						
 						//check the tree search results to see player is no longer in a shop.
 						boolean removeShop = true;
 						for( PrimitiveCuboid shop : res.results ) {
@@ -80,7 +83,7 @@ public class ShopsPlayerListener extends PlayerListener {
 						}
 						
 						if(removeShop) {
-							PlayerData.removePlayerFromShop(player, checkShopName);
+							itr.remove();
 							notifyPlayerLeftShop(player, checkShopName);
 						}
 						

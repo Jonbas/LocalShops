@@ -60,7 +60,7 @@ public class LocalShops extends JavaPlugin {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		pluginName = pdfFile.getName();
 		pluginVersion = pdfFile.getVersion();
-		System.out.println( pluginName + ": Loaded " + shopData.shops.size() + " shops.");
+		System.out.println( pluginName + ": Loaded " + shopData.shops.size() + " shop(s).");
 		System.out.println( pluginName + " version " + pluginVersion + " is enabled!");
 	}
 
