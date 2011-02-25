@@ -3,6 +3,7 @@ package net.centerleft.localshops;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.command.Command;
@@ -35,6 +36,7 @@ public class LocalShops extends JavaPlugin {
 	static File folderDir;
 	static String shopsPath = "shops/";
 	static File shopsDir;
+	static List foundWorlds;
 	
 	public Map<String, BookmarkedResult> playerResult;  //synchronized result buffer hash
 	
@@ -53,6 +55,7 @@ public class LocalShops extends JavaPlugin {
 		shopsDir = new File(folderPath + shopsPath); 
 		shopsDir.mkdir();
 		
+		foundWorlds = getServer().getWorlds();
 		// read the shops into memory
 		ShopData.LoadShops( shopsDir );
 
@@ -62,6 +65,8 @@ public class LocalShops extends JavaPlugin {
 		pluginVersion = pdfFile.getVersion();
 		System.out.println( pluginName + ": Loaded " + ShopData.shops.size() + " shop(s).");
 		System.out.println( pluginName + " version " + pluginVersion + " is enabled!");
+		
+		
 	}
 
 	public void onDisable() {

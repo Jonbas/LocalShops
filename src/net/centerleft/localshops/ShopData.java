@@ -3,7 +3,14 @@ package net.centerleft.localshops;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Scanner;
 
 import cuboidLocale.PrimitiveCuboid;
@@ -19,6 +26,15 @@ public class ShopData {
 		shops = new HashMap<String, Shop>();
 		shops.clear();
 		
+		String worldName = null;
+		boolean defaultWorld = false;
+		
+		if(LocalShops.foundWorlds.size() == 1) {
+			worldName = LocalShops.foundWorlds.get(0).toString();
+			defaultWorld = true;
+		}
+		
+		
 		File[] shopsList = shopsDir.listFiles();
 		for( File shop : shopsList ) {
 			
@@ -29,6 +45,13 @@ public class ShopData {
 			String[] split = null;
 		    Scanner scanner;
 		    PrimitiveCuboid tempShopCuboid = null; 
+		    
+		    //set default world just in case we're converting old files
+		    //will be over-written in case the shop files are setup correctly
+		    if(defaultWorld) {
+		    	tempShop.setWorldName(worldName);
+		    }
+		    
 		    
 		    try {
 				scanner = new Scanner(new FileInputStream(shop));	
@@ -161,5 +184,50 @@ public class ShopData {
 			}
 		}
 
+	}
+	
+	static boolean saveShop( Shop shop ) {
+		String filePath = LocalShops.shopsPath + shop.getShopName() + ".shop";
+		File shopFile = new File( filePath );
+		try {
+			shopFile.createNewFile();
+			
+			ArrayList<String> fileOutput = new ArrayList<String>();
+			
+			fileOutput.add("#" + shop.getShopName() + " shop file\n");
+			
+			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+	        Date date = new Date();
+			fileOutput.add("#" + dateFormat.format(date) + "\n");
+			
+			fileOutput.add("world=" + shop.getWorldName() + "\n");
+			fileOutput.add("owner=" + shop.getShopOwner() + "\n");
+			
+			String outString = null;
+			for( String manager: shop.getShopManagers()) {
+				outString += manager + ",";
+			}
+			fileOutput.add("managers=" + outString + "\n");
+			fileOutput.add("creator=" + shop.getShopCreator() + "\n");
+			fileOutput.add("position=" + shop.getShopPositionString() + "\n");
+			fileOutput.add("unlimited=" + shop.getValueofUnlimited() + "\n");
+			
+			
+			//TODO Output stock to file
+			
+			FileOutputStream shopFileOut = new FileOutputStream(filePath);
+			
+			for(String line: fileOutput) {
+				shopFileOut.write(line.getBytes());
+			}
+			
+			shopFileOut.close();
+			
+			
+		} catch ( IOException e1 ) {
+			System.out.println( LocalShops.pluginName + ": Error - Could not create file " + shopFile.getName());
+			return false;
+		}
+		return true;
 	}
 }

@@ -140,4 +140,33 @@ public class Shop {
 		
 	}
 
+	public String getShopOwner() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getShopCreator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getShopPositionString() {
+		String returnString = null;
+		for( long coord : shopLocation.getLocation()) {
+			returnString += coord + ",";
+		}
+		return returnString;
+	}
+
+	public String[] getShopManagers() {
+		return shopManagers;
+	}
+
+	public String getValueofUnlimited() {
+		if(this.unlimitedStock) {
+			return "true";
+		} 
+		return "false";
+	}
+
 }

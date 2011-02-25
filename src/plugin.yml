@@ -1,3 +1,12 @@
 name: LocalShops
 main: net.centerleft.localshops.LocalShops
 version: 0.1
+author: Jonbas
+description: >
+             A localized shop plugin for use with iConomy.
+             Users can create and manage their own shops.
+commands:
+  shop:
+    description: Command for managing shops 
+    usage: |
+           /<command> - displays command help
