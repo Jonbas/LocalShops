@@ -66,24 +66,28 @@ public class ShopsPlayerListener extends PlayerListener {
 					} 
 				}
 	
-				//check to see if we've left any shops
-				for( String checkShopName : PlayerData.playerShopList.get(playerName)) {
-					//check the list of shops that the player was in and see if he has left any
-		/*			if(!shopData.shops.get(checkShopName).getWorldName().equalsIgnoreCase(worldName)) {
-						//check if the shop is in the player's world
-						//if it's not remove the player from that shop.
-						PlayerData.removePlayerFromShop(player, checkShopName);
-						notifyPlayerLeftShop(  player, checkShopName);
-						continue;
-					} */
-					//check the tree search results to see player is no longer in a shop.
-					if(!res.results.contains(checkShopName)) {
-						PlayerData.removePlayerFromShop(player, checkShopName);
-						notifyPlayerLeftShop(player, checkShopName);
+				synchronized(PlayerData.playerShopList) {
+					//check to see if we've left any shops
+					for( String checkShopName : PlayerData.playerShopList.get(playerName)) {
+
+						//check the tree search results to see player is no longer in a shop.
+						boolean removeShop = true;
+						for( PrimitiveCuboid shop : res.results ) {
+							if (shop.name.equalsIgnoreCase(checkShopName)) {
+								removeShop = false;
+								break;
+							}
+						}
+						
+						if(removeShop) {
+							PlayerData.removePlayerFromShop(player, checkShopName);
+							notifyPlayerLeftShop(player, checkShopName);
+						}
+						
 					}
-					
-				} 
+				}
 			}
+			
 		}
 		
 	}
