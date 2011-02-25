@@ -15,7 +15,7 @@ public class PlayerData {
 	
 	static boolean addPlayerToShop( Player player, String shopName ) {
 		if( !playerIsInShop( player, shopName ) && 
-				shopData.shops.get(shopName).getWorldName().equalsIgnoreCase(player.getWorld().getName())){
+				ShopData.shops.get(shopName).getWorldName().equalsIgnoreCase(player.getWorld().getName())){
 			return playerShopList.get(player.getName()).add(shopName);
 		}
 		return false;
@@ -26,7 +26,7 @@ public class PlayerData {
 		String playerWorld = player.getWorld().getName();
 				
 		if( playerShopList.get(playerName).contains(shopName) && 
-				shopData.shops.get(shopName).getWorldName().equalsIgnoreCase(playerWorld)) {
+				ShopData.shops.get(shopName).getWorldName().equalsIgnoreCase(playerWorld)) {
 			return true;
 		}
 		return false;

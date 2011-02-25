@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import cuboidLocale.PrimitiveCuboid;
 
-public class shopData {
+public class ShopData {
 	static HashMap<String, Shop> shops;
 	
 	final static long shopSize = 10;

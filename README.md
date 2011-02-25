@@ -10,11 +10,13 @@ Implemented
 * Shop Class
 * Read shop data files and build hash table
 * Add shops to cuboid tree
-* check if user is in shop on move (still with console error)
+* check if user is in shop on move (fixed!)
 
 Still TODO
 -----------
 
+* write file output section
+* add default world to files that don't start with them (converting old format)
 * Build user commands 
 - /shop buy 
 - /shop sell 

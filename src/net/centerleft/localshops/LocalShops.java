@@ -54,13 +54,13 @@ public class LocalShops extends JavaPlugin {
 		shopsDir.mkdir();
 		
 		// read the shops into memory
-		shopData.LoadShops( shopsDir );
+		ShopData.LoadShops( shopsDir );
 
 		//update the console that we've started
 		PluginDescriptionFile pdfFile = this.getDescription();
 		pluginName = pdfFile.getName();
 		pluginVersion = pdfFile.getVersion();
-		System.out.println( pluginName + ": Loaded " + shopData.shops.size() + " shop(s).");
+		System.out.println( pluginName + ": Loaded " + ShopData.shops.size() + " shop(s).");
 		System.out.println( pluginName + " version " + pluginVersion + " is enabled!");
 	}
 

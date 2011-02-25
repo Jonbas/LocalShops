@@ -71,8 +71,7 @@ public class ShopsPlayerListener extends PlayerListener {
 					//check to see if we've left any shops
 					Iterator itr = PlayerData.playerShopList.get(playerName).iterator();
 					while( itr.hasNext()) {
-						String checkShopName = itr.next().toString();
-						
+						String checkShopName = itr.next().toString();	
 						//check the tree search results to see player is no longer in a shop.
 						boolean removeShop = true;
 						for( PrimitiveCuboid shop : res.results ) {
@@ -81,7 +80,6 @@ public class ShopsPlayerListener extends PlayerListener {
 								break;
 							}
 						}
-						
 						if(removeShop) {
 							itr.remove();
 							notifyPlayerLeftShop(player, checkShopName);
@@ -96,12 +94,12 @@ public class ShopsPlayerListener extends PlayerListener {
 	}
 
 	private void notifyPlayerLeftShop(Player player, String shopName) {
-		// TODO Auto-generated method stub
+		// TODO Add formatting
 		player.sendMessage("You have left the shop " + shopName + "!");
 	}
 
 	private void notifyPlayerEnterShop(Player player, String shopName) {
-		// TODO Auto-generated method stub
+		// TODO Add formatting
 		player.sendMessage("You have entered the shop " + shopName + "!");
 		
 	}
