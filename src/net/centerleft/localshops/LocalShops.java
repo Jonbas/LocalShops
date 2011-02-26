@@ -82,6 +82,13 @@ public class LocalShops extends JavaPlugin {
 		String commandName = command.getName().toLowerCase();
 
 		if (commandName.equals("shop")) {
+			if(args.length >= 1) {
+				
+				
+			} else {
+				Commands.printHelp(sender, args);
+			}
+			
 			return true;
 		}
 		return false;
