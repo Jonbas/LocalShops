@@ -88,6 +88,10 @@ public class LocalShops extends JavaPlugin {
 			if(args.length >= 1) {
 				if(args[0].equalsIgnoreCase("create")) {
 					Commands.createShop(sender, trimmedArgs);
+				} else if(args[0].equalsIgnoreCase("list")) {
+					Commands.listShop(sender, trimmedArgs);
+				} else if(args[0].equalsIgnoreCase("reload")) {
+					onEnable();
 				}
 				
 			} else {

@@ -1,17 +1,17 @@
 package net.centerleft.localshops;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class PlayerData {
 	  //define a synchronized map for keeping track of players
-	static Map<String, List<String>> playerShopList = 
-		Collections.synchronizedMap(new HashMap<String, List<String>>());
+	static Map<String, List<String>> playerShopList = Collections.synchronizedMap(new HashMap<String, List<String>>());
+	static String chatPrefix = ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA + "] ";
 	
 	static boolean addPlayerToShop( Player player, String shopName ) {
 		if( !playerIsInShop( player, shopName ) && 

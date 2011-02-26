@@ -1,6 +1,11 @@
 package net.centerleft.localshops;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Shop {
 	
@@ -13,8 +18,7 @@ public class Shop {
 	private boolean unlimitedStock;
 	
 	private HashMap<String, Item> shopInventory;
-	//TODO :: Need to find a naming convention so that items with different types are different
-
+	
 	public Shop() {
 		worldName = "";
 		shopName = null;
@@ -50,7 +54,6 @@ public class Shop {
 	private class Item {
 		
 		private String itemName;
-		private String itemData;
 		private int buyStackSize;
 		private int buyStackPrice;
 		private int sellStackSize;
@@ -59,12 +62,36 @@ public class Shop {
 		
 		public Item() {
 			itemName = null;
-			itemData = null;
 			buyStackSize = 1;
 			buyStackPrice = 0;
 			sellStackSize = 1;
 			sellStackPrice = 0;
 			stock = 0;
+		}
+		
+		public Item(String name ) {
+			this.itemName = name;
+
+			buyStackSize = 1;
+			buyStackPrice = 0;
+			sellStackSize = 1;
+			sellStackPrice = 0;
+			stock = 0;
+		}
+
+		public String itemName () {
+			return this.itemName;
+		}
+
+		public void setSell(int sellPrice, int sellSize) {
+			sellStackPrice = sellPrice;
+			sellStackSize = sellSize;
+			
+		}
+
+		public void setBuy(int buyPrice, int buySize) {
+			buyStackPrice = buyPrice;
+			buyStackSize = buySize;			
 		}
 	
 	}
@@ -138,9 +165,22 @@ public class Shop {
 		unlimitedStock = b;
 	}
 
-	public void addItem(int itemType, int itemData, int buyPrice,
+	public void addItem(int itemNumber, int itemData, int buyPrice,
 			int buyStackSize, int sellPrice, int sellStackSize, int stock) {
-		// TODO Auto-generated method stub
+		
+		String itemName = LocalShops.itemList.getItemName(itemNumber, itemData);
+		Item thisItem = new Item( itemName );
+		
+		thisItem.setBuy( buyPrice, buyStackSize );
+		thisItem.setSell( sellPrice, sellStackSize );
+		
+		thisItem.stock = stock;
+		
+		if(shopInventory.containsKey(itemName)) {
+			shopInventory.remove(itemName);
+		}
+		
+		shopInventory.put(itemName, thisItem);
 		
 	}
 
@@ -169,6 +209,42 @@ public class Shop {
 			return "true";
 		} 
 		return "false";
+	}
+
+	public ArrayList<String> getItems() {
+		ArrayList<String> allItemNames = new ArrayList<String>();
+
+		Iterator itr = shopInventory.entrySet().iterator();
+		while(itr.hasNext()) {
+			Map.Entry item = (Map.Entry)itr.next();
+			String name = ((Item)item.getValue()).itemName();
+			allItemNames.add(name);
+		}
+		
+		Collections.sort(allItemNames);
+		
+		return allItemNames;
+	}
+
+	public int getItemBuyPrice(String itemName ) {
+		return shopInventory.get(itemName).buyStackPrice;
+		
+	}
+
+	public int itemBuyAmount(String itemName) {
+		return shopInventory.get(itemName).buyStackSize;
+	}
+
+	public int getItemSellPrice(String itemName) {
+		return shopInventory.get(itemName).sellStackPrice;
+	}
+	
+	public int itemSellAmount(String itemName) {
+		return shopInventory.get(itemName).sellStackSize;
+	}
+
+	public int getItemStock(String itemName) {
+		return shopInventory.get(itemName).stock;
 	}
 
 }

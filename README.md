@@ -13,6 +13,9 @@ Implemented
 * check if user is in shop on move (fixed!)
 * file output
 * /shop create
+* /shop list
+* /shop list buy|sell
+* created items.txt with unique names for each item and data combinaiton
 
 Still TODO
 -----------
@@ -21,7 +24,6 @@ Still TODO
 * Build user commands 
 - /shop buy 
 - /shop sell 
-- /shop list
 - /shop add
 - /shop remove
 - /shop set (buy|sell|stacksize)

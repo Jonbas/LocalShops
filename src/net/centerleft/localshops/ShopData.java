@@ -19,6 +19,7 @@ public class ShopData {
 	
 	final static long shopSize = 10;
 	final static long shopHeight = 3;
+	static String currencyName = "Coin";
 	
 	static void LoadShops( File shopsDir ) {
 		  //initialize and setup the hash of shops
@@ -94,7 +95,7 @@ public class ShopData {
 								}
 								
 								String[] sell = args[2].split(";");
-								sellPrice = Integer.parseInt(buy[0]);
+								sellPrice = Integer.parseInt(sell[0]);
 								if(sell.length == 1) {
 									sellStackSize = 1;
 								} else {
