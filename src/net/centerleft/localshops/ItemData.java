@@ -81,14 +81,16 @@ public class ItemData {
 		return data;
 	}
 		
-	public String getItemName(int itemNumber) {
+	public ArrayList<String> getItemName(int itemNumber) {
+		ArrayList<String> foundNames = new ArrayList<String>();
+		
 		for( int i = 0; i <= this.itemNumber.size(); i++ ){
-			if( this.itemNumber.get(i) == itemNumber && !this.itemData.get(i).hasData ) {
-				return this.itemName.get(i);
+			if( this.itemNumber.get(i) == itemNumber) {
+				foundNames.add(this.itemName.get(i));
 			}
 		}
 		
-		return null;
+		return foundNames;
 		
 	}
 	
