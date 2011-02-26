@@ -16,11 +16,15 @@ public class Shop {
 	//TODO :: Need to find a naming convention so that items with different types are different
 
 	public Shop() {
-		worldName = null;
+		worldName = "";
 		shopName = null;
 		shopInventory = new HashMap<String, Item>();
 		shopInventory.clear();
 		shopLocation = new Location(0,0,0);
+		shopOwner = "";
+		shopCreator = "";
+		shopManagers = null;
+		unlimitedStock = false;
 	}
 	
 	public void setWorldName( String name ) {
@@ -141,17 +145,15 @@ public class Shop {
 	}
 
 	public String getShopOwner() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.shopOwner;
 	}
 
 	public String getShopCreator() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.shopCreator;
 	}
 
 	public String getShopPositionString() {
-		String returnString = null;
+		String returnString = "";
 		for( long coord : shopLocation.getLocation()) {
 			returnString += coord + ",";
 		}

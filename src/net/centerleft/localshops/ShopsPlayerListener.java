@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -57,7 +58,7 @@ public class ShopsPlayerListener extends PlayerListener {
 					
 					//for each shop that you find, check to see if we're already in it
 					
-					if( shop.name.equals(null)) continue;
+					if( shop.name == null ) continue;
 					
 							
 					if(!PlayerData.playerIsInShop(player, shop.name)) {
@@ -95,12 +96,14 @@ public class ShopsPlayerListener extends PlayerListener {
 
 	private void notifyPlayerLeftShop(Player player, String shopName) {
 		// TODO Add formatting
-		player.sendMessage("You have left the shop " + shopName + "!");
+		player.sendMessage( ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA 
+				+ "] You have left the shop " + ChatColor.WHITE + shopName);
 	}
 
 	private void notifyPlayerEnterShop(Player player, String shopName) {
 		// TODO Add formatting
-		player.sendMessage("You have entered the shop " + shopName + "!");
+		player.sendMessage( ChatColor.AQUA +"[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA 
+				+ "] You have entered the shop " + ChatColor.WHITE + shopName);
 		
 	}
 }

@@ -86,7 +86,9 @@ public class LocalShops extends JavaPlugin {
 
 		if (commandName.equals("shop")) {
 			if(args.length >= 1) {
-				
+				if(args[0].equalsIgnoreCase("create")) {
+					Commands.createShop(sender, trimmedArgs);
+				}
 				
 			} else {
 				Commands.printHelp(sender, args);

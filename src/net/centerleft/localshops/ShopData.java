@@ -186,11 +186,13 @@ public class ShopData {
 	}
 	
 	static boolean saveShop( Shop shop ) {
-		String filePath = LocalShops.shopsPath + shop.getShopName() + ".shop";
+		String filePath = LocalShops.folderPath + LocalShops.shopsPath + shop.getShopName() + ".shop";
+
 		File shopFile = new File( filePath );
 		try {
+
 			shopFile.createNewFile();
-			
+		
 			ArrayList<String> fileOutput = new ArrayList<String>();
 			
 			fileOutput.add("#" + shop.getShopName() + " shop file\n");
@@ -203,8 +205,12 @@ public class ShopData {
 			fileOutput.add("owner=" + shop.getShopOwner() + "\n");
 			
 			String outString = null;
-			for( String manager: shop.getShopManagers()) {
-				outString += manager + ",";
+			if( shop.getShopManagers() != null ) {
+				for( String manager: shop.getShopManagers()) {
+					outString = outString + manager + ",";
+				} 
+			} else {
+				outString = "none";
 			}
 			fileOutput.add("managers=" + outString + "\n");
 			fileOutput.add("creator=" + shop.getShopCreator() + "\n");
@@ -219,7 +225,7 @@ public class ShopData {
 			for(String line: fileOutput) {
 				shopFileOut.write(line.getBytes());
 			}
-			
+	
 			shopFileOut.close();
 			
 			

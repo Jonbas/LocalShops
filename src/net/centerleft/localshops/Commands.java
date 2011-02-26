@@ -1,9 +1,11 @@
 package net.centerleft.localshops;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
 
 public class Commands {
@@ -23,6 +25,7 @@ public class Commands {
 			
 			thisShop.setLocation(x, y, z);
 			thisShop.setShopCreator(player.getName());
+			thisShop.setShopOwner(player.getName());
 			thisShop.setShopName(shopName);
 			thisShop.setWorldName(player.getWorld().getName());
 			
@@ -37,15 +40,25 @@ public class Commands {
 			
 			xyzA[1] = y - 1;
 			xyzB[1] = y + ShopData.shopHeight - 1;
-
-			PrimitiveCuboid tempShopCuboid = new PrimitiveCuboid( xyzA, xyzB );
 			
-			//write the file
-			ShopData.saveShop(thisShop);
-			//insert the shop into the world
-			LocalShops.cuboidTree.insert(tempShopCuboid);
-			ShopData.shops.put(shopName, thisShop );
-			
+			//need to check to see if the shop overlaps another shop
+			if( shopPositionOk(  player, xyzA, xyzB )) {
+				
+				PrimitiveCuboid tempShopCuboid = new PrimitiveCuboid( xyzA, xyzB );
+				tempShopCuboid.name = shopName;
+				//insert the shop into the world
+				LocalShops.cuboidTree.insert(tempShopCuboid);
+				ShopData.shops.put(shopName, thisShop );
+				
+				//write the file
+				if( ShopData.saveShop(thisShop) ) { 
+					player.sendMessage( ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA 
+							+ "] " + ChatColor.WHITE + shopName + ChatColor.AQUA + " was created succesfully.");
+				} else {
+					player.sendMessage( ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA 
+							+ "] There was an error, could not create shop.");
+				}
+			}
 		} 
 	}
 	
@@ -58,5 +71,42 @@ public class Commands {
 		// TODO Auto-generated method stub
 		sender.sendMessage("Looks like you need some help?");
 		
+	}
+	
+	private static boolean shopPositionOk( Player player, long[] xyzA, long[] xyzB ) {
+		BookmarkedResult res = new BookmarkedResult();
+		
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzA[0], xyzA[1], xyzA[2] );
+		if( shopOverlaps(player, res) ) return false;
+		
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzA[0], xyzA[1], xyzB[2] );
+		if( shopOverlaps(player, res) ) return false;
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzA[0], xyzB[1], xyzA[2] );
+		if( shopOverlaps(player, res) ) return false;
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzA[0], xyzB[1], xyzB[2] );
+		if( shopOverlaps(player, res) ) return false;
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzB[0], xyzA[1], xyzA[2] );
+		if( shopOverlaps(player, res) ) return false;
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzB[0], xyzA[1], xyzB[2] );
+		if( shopOverlaps(player, res) ) return false;
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzB[0], xyzB[1], xyzA[2] );
+		if( shopOverlaps(player, res) ) return false;
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzB[0], xyzB[1], xyzB[2] );
+		if( shopOverlaps(player, res) ) return false;
+		return true;
+	}
+	
+	private static boolean shopOverlaps( Player player, BookmarkedResult res ) {
+		if( res.results.size() != 0 ) {
+			for( PrimitiveCuboid shop : res.results) {
+				if(shop.name != null) {
+					player.sendMessage(ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA 
+							+ "] Could not create shop, it overlaps with " + ChatColor.WHITE 
+							+ shop.name );
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
