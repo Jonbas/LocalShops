@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -36,7 +34,9 @@ public class LocalShops extends JavaPlugin {
 	static File folderDir;
 	static String shopsPath = "shops/";
 	static File shopsDir;
-	static List foundWorlds;
+	static List<World> foundWorlds;
+	
+	static ItemData itemList = new ItemData();
 	
 	public Map<String, BookmarkedResult> playerResult;  //synchronized result buffer hash
 	
@@ -54,6 +54,9 @@ public class LocalShops extends JavaPlugin {
 		folderDir.mkdir();
 		shopsDir = new File(folderPath + shopsPath); 
 		shopsDir.mkdir();
+		
+		//build data table for item names and values
+		itemList.loadData(new File(folderPath + "items.txt"));
 		
 		foundWorlds = getServer().getWorlds();
 		// read the shops into memory
