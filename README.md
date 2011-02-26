@@ -11,11 +11,12 @@ Implemented
 * Read shop data files and build hash table
 * Add shops to cuboid tree
 * check if user is in shop on move (fixed!)
+* file output
+* /shop create
 
 Still TODO
 -----------
 
-* write file output section
 * add default world to files that don't start with them (converting old format)
 * Build user commands 
 - /shop buy 
@@ -24,7 +25,6 @@ Still TODO
 - /shop add
 - /shop remove
 - /shop set (buy|sell|stacksize)
-- /shop create
 - /shop destroy
 * hook into iConomy
 * hook into Permissions
