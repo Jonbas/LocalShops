@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.Scanner;
 
 import cuboidLocale.PrimitiveCuboid;
@@ -30,7 +29,7 @@ public class ShopData {
 		boolean defaultWorld = false;
 		
 		if(LocalShops.foundWorlds.size() == 1) {
-			worldName = LocalShops.foundWorlds.get(0).toString();
+			worldName = LocalShops.foundWorlds.get(0).getName().toString();
 			defaultWorld = true;
 		}
 		
