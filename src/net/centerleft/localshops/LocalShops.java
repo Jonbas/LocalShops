@@ -1,6 +1,7 @@
 package net.centerleft.localshops;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -43,11 +45,21 @@ public class LocalShops extends JavaPlugin {
 	public void onEnable() {
 		
 		playerResult = Collections.synchronizedMap(new HashMap<String, BookmarkedResult>());
+		
+		for( Player player : this.getServer().getOnlinePlayers() ) {
+			if( !this.playerResult.containsKey(player.getName())) {
+				this.playerResult.put(player.getName(), new BookmarkedResult());
+			}
+			if( !PlayerData.playerShopList.containsKey(player.getName())) {
+				PlayerData.playerShopList.put(player.getName(), Collections.synchronizedList(new ArrayList<String>()));	
+			}
+		}
 
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+		
+
 		
 		// setup the file IO
 		folderDir = new File(folderPath);

@@ -1,8 +1,6 @@
 package net.centerleft.localshops;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -119,95 +117,124 @@ public class Commands {
 			Player player = (Player)sender;
 			String playerName = player.getName();
 			String inShopName;
-		
-			//get the shop the player is currently in
-			if( PlayerData.playerShopList.get(playerName).size() == 1 ) {
-				if( args.length > 1 ) {
-					if( args[1].equalsIgnoreCase("buy")) {
-						inShopName = PlayerData.playerShopList.get(playerName).get(0);
-						
-						Shop shop = ShopData.shops.get(inShopName);
-						
-						ArrayList<String> shopItems = shop.getItems();
-						
-						//TODO Finish this
-						player.sendMessage(ChatColor.AQUA + "The shop " + ChatColor.WHITE 
-								+ inShopName + ChatColor.AQUA + " is selling:");
-						for(String item: shopItems ) {
-							String message = "   " + item;
-							//get buy price
-							int price = shop.getItemBuyPrice(item);
-							if(price == 0) continue;
-							message += ChatColor.AQUA + " [" + ChatColor.WHITE + price + " " + ShopData.currencyName 
-								+ ChatColor.AQUA + "]";
-							//get stack size
-							int stack = shop.itemBuyAmount(item);
-							if( stack > 1 ) {
-								message += ChatColor.AQUA + " [" + ChatColor.WHITE + "Bundle: " + stack + ChatColor.AQUA + "]";
-							}
-							//get stock
-							int stock = shop.getItemStock(item);
-							message += ChatColor.AQUA + " [" + ChatColor.WHITE + "Stock: " + stock + ChatColor.AQUA + "]";
-							player.sendMessage(message);
-						}
-						player.sendMessage(ChatColor.AQUA + "To buy an item on the list type: " 
-								+ ChatColor.WHITE + "/shop buy ItemName [ammount]");
-					}
-					if( args[1].equalsIgnoreCase("sell")) {
-						inShopName = PlayerData.playerShopList.get(playerName).get(0);
-						
-						Shop shop = ShopData.shops.get(inShopName);
-						
-						ArrayList<String> shopItems = shop.getItems();
-						
-						//TODO Finish this
-						player.sendMessage(ChatColor.AQUA + "The shop " + ChatColor.WHITE 
-								+ inShopName + ChatColor.AQUA + " is buying:");
-						for(String item: shopItems ) {
-							String message = "   " + item;
-							//get buy price
-							int price = shop.getItemSellPrice(item);
-							if(price == 0) continue;
-							message += ChatColor.AQUA + " [" + ChatColor.WHITE + price + " " + ShopData.currencyName 
-								+ ChatColor.AQUA + "]";
-							//get stack size
-							int stack = shop.itemSellAmount(item);
-							if( stack > 1 ) {
-								message += ChatColor.AQUA + " [" + ChatColor.WHITE + "Bundle: " + stack + ChatColor.AQUA + "]";
-							}
-							//get stock
-							int stock = shop.getItemStock(item);
-							message += ChatColor.AQUA + " [" + ChatColor.WHITE + "Stock: " + stock + ChatColor.AQUA + "]";
-							player.sendMessage(message);
-						}
-						player.sendMessage(ChatColor.AQUA + "To sell an item on the list type: " 
-								+ ChatColor.WHITE + "/shop sell ItemName [ammount]");
-					}
+			
+			int pageNumber = 1;
+			
+			if(args.length == 2) {
+				try {
+					pageNumber = Integer.parseInt(args[1]);
+				} catch (NumberFormatException ex) {
 					
-				} else {
-					inShopName = PlayerData.playerShopList.get(playerName).get(0);
-					
-					Shop shop = ShopData.shops.get(inShopName);
-					
-					ArrayList<String> shopItems = shop.getItems();
-
-					player.sendMessage(ChatColor.AQUA + "The shop " + ChatColor.WHITE 
-							+ inShopName + ChatColor.AQUA + " is buying and selling:");
-					for(String item: shopItems ) {
-						String message = "   " + item;
-						//get stock
-						int stock = shop.getItemStock(item);
-						message += " " + ChatColor.AQUA + "[" + ChatColor.WHITE + "Stock: " + stock + ChatColor.AQUA + "]";
-						player.sendMessage(message);
-					}
-					player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/shop list buy" 
-							+ ChatColor.AQUA + " or " + ChatColor.WHITE + "/shop list sell");
-					player.sendMessage(ChatColor.AQUA + "to see details about price and quantity.");
 				}
-				
 			}
 			
-			
+			if(args.length == 3 ) {
+				try {
+					pageNumber = Integer.parseInt(args[2]);
+				} catch (NumberFormatException ex2) {
+					
+				}
+			}
+		
+			//get the shop the player is currently in
+
+			if( PlayerData.playerShopsList(playerName).size() == 1 ) {
+				inShopName = PlayerData.playerShopList.get(playerName).get(0);
+				Shop shop = ShopData.shops.get(inShopName);
+				
+				if( args.length > 1 ) {
+					if( args[1].equalsIgnoreCase("buy") || args[1].equalsIgnoreCase("sell")) {
+						printInventory( shop, player, args[1], pageNumber );
+						
+					} else {
+						printInventory( shop, player, "list", pageNumber );
+					}
+				} else {
+					printInventory( shop, player, "list", pageNumber );
+				}
+			}
+		}
+	}
+	
+	public static void printInventory( Shop shop, Player player, String buySellorList) {
+		printInventory( shop, player, buySellorList, 1 );
+	}
+	
+	public static void printInventory( Shop shop, Player player, String buySellorList, int pageNumber) {
+		String inShopName = shop.getShopName();
+		ArrayList<String> shopItems = shop.getItems();
+		
+		boolean buy = buySellorList.equalsIgnoreCase("buy");
+		boolean sell = buySellorList.equalsIgnoreCase("sell");
+		boolean list = buySellorList.equalsIgnoreCase("list");
+		
+		ArrayList<String> inventoryMessage = new ArrayList<String>();
+		for(String item: shopItems ) {
+			String subMessage = "   " + item;
+			if(!list) {
+				int price = 0;
+				if(buy) {
+				//get buy price
+					price = shop.getItemBuyPrice(item);
+				}
+				if(sell) {
+					price = shop.getItemSellPrice(item);
+				}
+	 			if(price == 0) continue;
+				subMessage += ChatColor.AQUA + " [" + ChatColor.WHITE + price + " " + ShopData.currencyName 
+					+ ChatColor.AQUA + "]";
+				//get stack size
+				int stack = shop.itemBuyAmount(item);
+				if(buy) {
+					stack = shop.itemBuyAmount(item);
+				}
+				if(sell) {
+					stack = shop.itemSellAmount(item);
+				}
+				if( stack > 1 ) {
+					subMessage += ChatColor.AQUA + " [" + ChatColor.WHITE + "Bundle: " + stack + ChatColor.AQUA + "]";
+				}
+			}
+			//get stock
+			int stock = shop.getItemStock(item);
+			if(buy) {
+				if(stock == 0) continue;
+			}
+			subMessage += ChatColor.AQUA + " [" + ChatColor.WHITE + "Stock: " + stock + ChatColor.AQUA + "]";
+			inventoryMessage.add(subMessage);
+		}
+		
+		String message = ChatColor.AQUA + "The shop " + ChatColor.WHITE + inShopName + ChatColor.AQUA;
+		
+		if( buy ) {
+			message += " is selling:";
+		} else if ( sell ) {
+			message += " is buying:";
+		} else {
+			message += " trades in: ";
+		}
+		
+		message += " (Page " + pageNumber + " of " 
+			+ (int) Math.ceil((double) inventoryMessage.size() / (double) 7) + ")";
+		
+		player.sendMessage(message);
+		
+		int amount = (pageNumber > 0 ? (pageNumber - 1)*7 : 0);
+		for (int i = amount; i < amount + 7; i++) {
+            if (inventoryMessage.size() > i) {
+            	player.sendMessage(inventoryMessage.get(i));
+            }
+        }
+		
+		if(!list) {
+			String buySell = ( buy ? "buy" : "sell" );
+			message = ChatColor.AQUA + "To " + buySell + " an item on the list type: " +
+				ChatColor.WHITE + "/shop " + buySell + " ItemName [ammount]";
+			player.sendMessage(message);
+		} else {
+			player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/shop list buy" 
+					+ ChatColor.AQUA + " or " + ChatColor.WHITE + "/shop list sell");
+			player.sendMessage(ChatColor.AQUA + "to see details about price and quantity.");
 		}
 	}
 }

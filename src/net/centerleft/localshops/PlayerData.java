@@ -1,5 +1,6 @@
 package net.centerleft.localshops;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,13 @@ public class PlayerData {
 
 	public static void removePlayerFromShop(Player player, String shopName) {
 		playerShopList.get(player.getName()).remove(shopName);
+	}
+
+	public static List<String> playerShopsList(String playerName) {
+		if( !playerShopList.containsKey(playerName)) {
+			playerShopList.put(playerName, Collections.synchronizedList(new ArrayList<String>()));	
+		}
+		return playerShopList.get(playerName);
 	}
 
 }
