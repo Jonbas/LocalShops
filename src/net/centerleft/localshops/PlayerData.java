@@ -44,4 +44,19 @@ public class PlayerData {
 		return playerShopList.get(playerName);
 	}
 
+	public static boolean payPlayer(String playerName, int cost) {
+		// TODO add iConomy integration
+		return true;
+	}
+
+	public static boolean payPlayer(String playerFrom, String playerTo, int cost) {
+		// TODO add iConomy integration
+		return true;
+	}
+
+	public static long getBalance(String shopOwner) {
+		// TODO add iConomy integration
+		return 0;
+	}
+
 }

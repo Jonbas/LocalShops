@@ -246,4 +246,26 @@ public class Shop {
 		return shopInventory.get(itemName).stock;
 	}
 
+	public boolean isUnlimited() {
+		return unlimitedStock;
+	}
+
+	public boolean addStock(String itemName, int amount) {
+		if(!shopInventory.containsKey(itemName)) return false;
+		int oldStock = shopInventory.get(itemName).stock;
+		shopInventory.get(itemName).stock = oldStock + amount;
+		return true;
+	}
+	
+	public boolean removeStock(String itemName, int amount) {
+		if(!shopInventory.containsKey(itemName)) return false;
+		int oldStock = shopInventory.get(itemName).stock;
+		if( (oldStock - amount) >= 0) {
+			shopInventory.get(itemName).stock = oldStock - amount;
+		} else {
+			shopInventory.get(itemName).stock = 0;
+		}
+		return true;
+	}
+
 }

@@ -3,14 +3,17 @@ package net.centerleft.localshops;
 import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
 
 public class Commands {
-	static void createShop( CommandSender sender, String[] args ) {
+	static boolean createShop( CommandSender sender, String[] args ) {
+		//TODO Change this so that non players can create shops as long as they send x, y, z coords
 		if(canUseCommand(sender, args) && args.length == 2 && (sender instanceof Player)) {
 			//command format /shop create ShopName
 			Player player = (Player)sender;
@@ -54,11 +57,14 @@ public class Commands {
 				//write the file
 				if( ShopData.saveShop(thisShop) ) { 
 					player.sendMessage( PlayerData.chatPrefix + ChatColor.WHITE + shopName + ChatColor.AQUA + " was created succesfully.");
+					return true;
 				} else {
 					player.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "There was an error, could not create shop.");
+					return false;
 				}
 			}
-		} 
+		}
+		return false;
 	}
 	
 	static boolean canUseCommand( CommandSender sender, String[] args ) {
@@ -152,6 +158,8 @@ public class Commands {
 				} else {
 					printInventory( shop, player, "list", pageNumber );
 				}
+			} else {
+				player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop list");
 			}
 		}
 	}
@@ -236,5 +244,90 @@ public class Commands {
 					+ ChatColor.AQUA + " or " + ChatColor.WHITE + "/shop list sell");
 			player.sendMessage(ChatColor.AQUA + "to see details about price and quantity.");
 		}
+	}
+
+	public static boolean sellItemShop(CommandSender sender, String[] args) {
+		// TODO Auto-generated method stub
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		if(!ShopsPluginListener.useiConomy) return false;
+		
+		/* Available formats:
+		 *  /shop sell
+		 *  /shop sell #
+		 *  /shop sell all
+		 *  /shop sell item #
+		 *  /shop sell item all
+		 */
+		
+		Player player = (Player)sender;
+		String playerName = player.getName();
+		// first case /shop sell
+		if(args.length == 1) {
+			ItemStack item = player.getItemInHand();
+			if( item == null || item.getType().getId() == Material.AIR.getId()) {
+				return true;
+			}
+			
+			String itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+			int amount = item.getAmount();
+			
+			//get the shop the player is currently in
+
+			if( PlayerData.playerShopsList(playerName).size() == 1 ) {
+				String shopName = PlayerData.playerShopsList(playerName).get(0);
+				Shop shop = ShopData.shops.get(shopName);
+				
+				//check if the shop is buying that item
+				if(!shop.getItems().contains(itemName) || shop.getItemSellPrice(itemName) == 0) {
+					player.sendMessage(ChatColor.AQUA + "Sorry, " + ChatColor.WHITE + shopName 
+							+ ChatColor.AQUA + " is not buying " + ChatColor.WHITE + itemName 
+							+ ChatColor.AQUA + " right now." );
+					return false;
+				}
+				
+				//calculate cost
+				int bundles = amount / shop.itemSellAmount(itemName);
+				int itemPrice = shop.getItemSellPrice(itemName);
+				//recalculate # of items since may not fit cleanly into bundles
+				amount = bundles * shop.itemSellAmount(itemName);
+				int totalCost = bundles * itemPrice;
+				
+				//try to pay the player
+				if(shop.isUnlimited()) {
+					PlayerData.payPlayer(playerName, totalCost);
+				} else {
+					if(!PlayerData.payPlayer(shop.getShopOwner(), playerName, totalCost)) {
+						//shop owner doesn't have enough money
+						//get shop owner's balance and calculate how many it can buy
+						long shopBalance = PlayerData.getBalance(shop.getShopOwner());
+						int bundlesCanAford = (int)shopBalance / itemPrice;
+						totalCost = bundlesCanAford * itemPrice;
+						amount = bundlesCanAford * shop.itemSellAmount(itemName);
+						if(!PlayerData.payPlayer(shop.getShopOwner(), playerName, totalCost)) {
+							player.sendMessage(ChatColor.AQUA + "Unexpected money problem: could not complete sale.");
+							return false;
+						}
+					}
+				}
+
+				//remove number of items from seller
+				if(amount == item.getAmount()) {
+					player.getItemInHand().setAmount(0);
+					player.getItemInHand().setTypeId(0);
+				} else {
+					player.getItemInHand().setAmount(item.getAmount() - amount);
+				}
+				
+				//add number of items sold to the shop
+				shop.addStock(itemName, amount);
+				
+				
+			} else {
+				player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop" + args[0]);
+			}
+			
+		}
+		
+		return true;
 	}
 }
