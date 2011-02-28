@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
@@ -263,19 +264,26 @@ public class Commands {
 		String playerName = player.getName();
 		// first case /shop sell
 		if(args.length == 1) {
-			ItemStack item = player.getItemInHand();
-			if( item == null || item.getType().getId() == Material.AIR.getId()) {
-				return true;
-			}
-			
-			String itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
-			int amount = item.getAmount();
-			
 			//get the shop the player is currently in
-
 			if( PlayerData.playerShopsList(playerName).size() == 1 ) {
 				String shopName = PlayerData.playerShopsList(playerName).get(0);
 				Shop shop = ShopData.shops.get(shopName);
+				
+				ItemStack item = player.getInventory().getItemInHand();
+				if( item == null || item.getType().getId() == Material.AIR.getId()) {
+					return true;
+				}
+
+
+
+				String itemName;
+				if( item.getData() != null) {
+					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+				} else {
+					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
+				}
+				
+				int amount = item.getAmount();
 				
 				//check if the shop is buying that item
 				if(!shop.getItems().contains(itemName) || shop.getItemSellPrice(itemName) == 0) {
@@ -309,21 +317,26 @@ public class Commands {
 						}
 					}
 				}
+				
 
 				//remove number of items from seller
 				if(amount == item.getAmount()) {
-					player.getItemInHand().setAmount(0);
-					player.getItemInHand().setTypeId(0);
+					
+		//			item.setAmount(0);
+		//			item.setTypeId(0);
+		//			player.getInventory().setItemInHand(item);
+					
+					player.setItemInHand(null);
+
 				} else {
-					player.getItemInHand().setAmount(item.getAmount() - amount);
+					player.getInventory().getItemInHand().setAmount(item.getAmount() - amount);
 				}
 				
 				//add number of items sold to the shop
 				shop.addStock(itemName, amount);
-				
-				
+
 			} else {
-				player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop" + args[0]);
+				player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
 			}
 			
 		}
