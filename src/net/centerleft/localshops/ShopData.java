@@ -186,7 +186,7 @@ public class ShopData {
 
 	}
 	
-	static boolean saveShop( Shop shop ) {
+	public static boolean saveShop( Shop shop ) {
 		String filePath = LocalShops.folderPath + LocalShops.shopsPath + shop.getShopName() + ".shop";
 
 		File shopFile = new File( filePath );
@@ -218,8 +218,18 @@ public class ShopData {
 			fileOutput.add("position=" + shop.getShopPositionString() + "\n");
 			fileOutput.add("unlimited=" + shop.getValueofUnlimited() + "\n");
 			
-			
-			//TODO Output stock to file
+			for(String item: shop.getItems()) {
+				int buyPrice = shop.getItemBuyPrice(item);
+				int buySize = shop.itemBuyAmount(item);
+				int sellPrice = shop.getItemSellPrice(item);
+				int sellSize = shop.itemSellAmount(item);
+				int stock = shop.getItemStock(item);
+				int[] itemInfo = LocalShops.itemList.getItemInfo(item);
+				if(itemInfo == null) continue;
+				//itemId=dataValue,buyPrice:buyStackSize,sellPrice:sellStackSize,stock
+				fileOutput.add(itemInfo[0] + "=" + itemInfo[1] + "," + buyPrice + ";" + buySize
+						 + "," + sellPrice + ";" + sellSize + "," + stock + "\n");
+			}
 			
 			FileOutputStream shopFileOut = new FileOutputStream(filePath);
 			

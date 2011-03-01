@@ -13,6 +13,7 @@ import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
 
 public class Commands {
+	
 	static boolean createShop( CommandSender sender, String[] args ) {
 		//TODO Change this so that non players can create shops as long as they send x, y, z coords
 		if(canUseCommand(sender, args) && args.length == 2 && (sender instanceof Player)) {
@@ -116,10 +117,6 @@ public class Commands {
 	}
 
 	public static void listShop(CommandSender sender, String[] args) {
-		
-		// TODO This needs a command for adding page #'s to the shop list
-		// so that long pages will wrap to second page
-		
 		if(canUseCommand(sender, args) && (sender instanceof Player)) {
 			Player player = (Player)sender;
 			String playerName = player.getName();
@@ -165,10 +162,25 @@ public class Commands {
 		}
 	}
 	
+	/**
+	 * Prints shop inventory with default page # = 1
+	 * 
+	 * @param shop
+	 * @param player
+	 * @param buySellorList
+	 */
 	public static void printInventory( Shop shop, Player player, String buySellorList) {
 		printInventory( shop, player, buySellorList, 1 );
 	}
 	
+	/**
+	 * Prints shop inventory list.  Takes buy, sell, or list as arguments for which format to print.
+	 * 
+	 * @param shop
+	 * @param player
+	 * @param buySellorList
+	 * @param pageNumber
+	 */
 	public static void printInventory( Shop shop, Player player, String buySellorList, int pageNumber) {
 		String inShopName = shop.getShopName();
 		ArrayList<String> shopItems = shop.getItems();
@@ -246,7 +258,16 @@ public class Commands {
 			player.sendMessage(ChatColor.AQUA + "to see details about price and quantity.");
 		}
 	}
-
+	
+	/**
+	 * Processes sell command.
+	 *  
+	 * @param sender
+	 * @param args
+	 * @return
+	 *   true - if command succeeds
+	 *   false otherwise
+	 */
 	public static boolean sellItemShop(CommandSender sender, String[] args) {
 		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
 		if(!ShopsPluginListener.useiConomy) return false;
@@ -317,7 +338,6 @@ public class Commands {
 					return false;
 				}
 				
-System.out.println("Returned itemstack type " + item.getType().toString());
 				int totalAmount = 0;
 				for(Integer i : player.getInventory().all(item.getType()).keySet()) {
 					totalAmount += player.getInventory().getItem(i).getAmount();
@@ -367,21 +387,24 @@ System.out.println("Returned itemstack type " + item.getType().toString());
 			if(shop.isUnlimited()) {
 				PlayerData.payPlayer(playerName, totalCost);
 			} else {
-				if(!PlayerData.payPlayer(shop.getShopOwner(), playerName, totalCost)) {
-					//shop owner doesn't have enough money
-					//get shop owner's balance and calculate how many it can buy
-					long shopBalance = PlayerData.getBalance(shop.getShopOwner());
-					int bundlesCanAford = (int)shopBalance / itemPrice;
-					totalCost = bundlesCanAford * itemPrice;
-					amount = bundlesCanAford * shop.itemSellAmount(itemName);
+				if( !isShopController(player, shop )) {
 					if(!PlayerData.payPlayer(shop.getShopOwner(), playerName, totalCost)) {
-						player.sendMessage(ChatColor.AQUA + "Unexpected money problem: could not complete sale.");
-						return false;
+						//shop owner doesn't have enough money
+						//get shop owner's balance and calculate how many it can buy
+						long shopBalance = PlayerData.getBalance(shop.getShopOwner());
+						int bundlesCanAford = (int)shopBalance / itemPrice;
+						totalCost = bundlesCanAford * itemPrice;
+						amount = bundlesCanAford * shop.itemSellAmount(itemName);
+						if(!PlayerData.payPlayer(shop.getShopOwner(), playerName, totalCost)) {
+							player.sendMessage(ChatColor.AQUA + "Unexpected money problem: could not complete sale.");
+							return false;
+						}
 					}
 				}
 			}
 			
-			player.sendMessage("Selling " + amount);
+			shop.addStock(itemName, amount);
+			
 			//remove number of items from seller
 			for(int i: player.getInventory().all(item.getType()).keySet()) {
 				if( amount == 0 ) continue;
@@ -399,12 +422,180 @@ System.out.println("Returned itemstack type " + item.getType().toString());
 				
 			}
 			
-			shop.addStock(itemName, amount);
+
+			ShopData.saveShop(shop);
 
 		} else {
 			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
 		}
 			
 		return true;
+	}
+	
+	/**
+	 * Add an item to the shop.  Checks if shop manager or owner and takes item from inventory of player.
+	 * If item is not sold in the shop yet, adds the item with buy and sell price of 0 and default bundle
+	 * sizes of 1.
+	 * 
+	 * @param sender
+	 * @param args
+	 * @return true if the commands succeeds, otherwise false
+	 */
+	public static boolean addItemShop(CommandSender sender, String[] args) {
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		
+		/* Available formats:
+		 *  /shop add
+		 *  /shop add #
+		 *  /shop add all
+		 *  /shop add item #
+		 *  /shop add item all
+		 */
+		
+		Player player = (Player)sender;
+		String playerName = player.getName();
+
+		//get the shop the player is currently in
+		if( PlayerData.playerShopsList(playerName).size() == 1 ) {
+			String shopName = PlayerData.playerShopsList(playerName).get(0);
+			Shop shop = ShopData.shops.get(shopName);
+			
+			ItemStack item = null;
+			String itemName = null;
+			int amount = 0;
+			
+			if(args.length == 1 || args.length == 2) {
+			
+				item = player.getInventory().getItemInHand();
+				if( item == null || item.getType().getId() == Material.AIR.getId()) {
+					return true;
+				}
+	
+
+				if( item.getData() != null) {
+					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+				} else {
+					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
+				}
+				
+				amount = item.getAmount();
+				if(args.length == 2) {
+					int totalAmount = 0;
+					for(Integer i : player.getInventory().all(item.getType()).keySet()) {
+						totalAmount += player.getInventory().getItem(i).getAmount();
+					}
+					try {
+						int numberToRemove = Integer.parseInt(args[1]);
+						if( numberToRemove > totalAmount) {
+							amount = totalAmount;
+						} else {
+							amount = numberToRemove;
+						}
+					} catch ( NumberFormatException ex1 ) {
+						if(args[1].equalsIgnoreCase("all")) {
+							amount = totalAmount;
+						} else {
+							player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop sell <# to sell>");
+							return false;							
+						}
+					}
+				}
+				
+			}
+			
+			if(args.length == 3) {
+				item = LocalShops.itemList.getItem(args[1]);
+				if(item == null) {
+					player.sendMessage(ChatColor.AQUA + "Could not find an item of that type.");
+					return false;
+				}
+				
+				int totalAmount = 0;
+				for(Integer i : player.getInventory().all(item.getType()).keySet()) {
+					totalAmount += player.getInventory().getItem(i).getAmount();
+				}
+				
+				if(item.getData() != null) {
+					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+				} else {
+					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
+				}
+				
+				try {
+					int numberToRemove = Integer.parseInt(args[2]);
+					if( numberToRemove > totalAmount) {
+						amount = totalAmount;
+					} else {
+						amount = numberToRemove;
+					}
+				} catch (NumberFormatException ex2 ) {
+					if( args[2].equalsIgnoreCase("all")) {
+						amount = totalAmount;
+					} else {
+						player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop add <itemName> <# to sell>");
+						return false;
+					}
+				}
+				
+			}
+			
+			
+			//check if the shop is buying that item
+			if(!shop.getItems().contains(itemName)) {
+				int itemInfo[] = LocalShops.itemList.getItemInfo(itemName);
+				if( itemInfo == null ) {
+					player.sendMessage(ChatColor.AQUA + "Could not find an item of that type.");
+					return false;
+				}
+				shop.addItem(itemInfo[0], itemInfo[1], 0, 1, 0, 1, 0);
+			}
+			
+			shop.addStock(itemName, amount);
+			
+			player.sendMessage(ChatColor.AQUA + "Succesfully added " + ChatColor.WHITE + itemName 
+					+ ChatColor.AQUA + " to the shop. Stock is now " + ChatColor.WHITE + shop.getItemStock(itemName));
+			
+			//remove number of items from player adding stock
+			for(int i: player.getInventory().all(item.getType()).keySet()) {
+				if( amount == 0 ) continue;
+				ItemStack thisStack = player.getInventory().getItem(i);
+				int foundAmount = thisStack.getAmount();
+				if( amount >= foundAmount ) {
+					amount -= foundAmount;
+					player.getInventory().setItem(i, null);
+				} else {
+					int amountInStack = player.getInventory().getItem(i).getAmount();
+					thisStack.setAmount(amountInStack - amount);
+					player.getInventory().setItem(i, thisStack);
+					amount = 0;
+				}
+			}
+			
+
+			ShopData.saveShop(shop);
+
+		} else {
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+		}
+		
+		
+		return true;
+	}
+	
+	/**
+	 * Returns true if the player is in the shop manager list or is the shop owner
+	 * 
+	 * @param player
+	 * @param shop
+	 * @return
+	 */
+	private static boolean isShopController(Player player, Shop shop) {
+		if(shop.getShopOwner().equalsIgnoreCase(player.getName())) return true;
+		for(String manager: shop.getShopManagers()) {
+			if( player.getName().equalsIgnoreCase(manager)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
