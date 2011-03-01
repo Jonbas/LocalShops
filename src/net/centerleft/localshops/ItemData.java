@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
+
 public class ItemData {
 	private ArrayList<String> itemName;
 	private ArrayList<Integer> itemNumber;
@@ -77,6 +81,7 @@ public class ItemData {
 		
 	public int[] getItemInfo(String name) {
 		int index = itemName.indexOf(name);
+		if (index == -1) return null;
 		int[] data = { itemNumber.get(index), itemData.get(index).dataValue };
 		return data;
 	}
@@ -118,6 +123,30 @@ public class ItemData {
 			this.dataValue = 0;
 			this.hasData = false;
 		}
+	}
+
+	public ItemStack getItem(String arg0) {
+		
+		int[] info = null;
+		ItemStack item = null;
+		
+		try {
+			ArrayList<String> list = getItemName(Integer.parseInt(arg0));
+			info = getItemInfo(list.get(0));
+
+		} catch (NumberFormatException ex) {
+			info = getItemInfo(arg0);
+		}
+		
+		if( info != null) {
+			item = new ItemStack(info[0], 1);
+			MaterialData data = new MaterialData(info[1]);
+			item.setData(data);
+			
+			return item;
+		}
+		
+		return null;
 	}
 
 }

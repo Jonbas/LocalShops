@@ -1,6 +1,6 @@
 name: LocalShops
 main: net.centerleft.localshops.LocalShops
-version: 0.2
+version: 0.3
 author: Jonbas
 description: >
              A localized shop plugin for use with iConomy.
