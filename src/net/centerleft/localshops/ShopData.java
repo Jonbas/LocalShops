@@ -224,7 +224,7 @@ public class ShopData {
 				int sellPrice = shop.getItemSellPrice(item);
 				int sellSize = shop.itemSellAmount(item);
 				int stock = shop.getItemStock(item);
-				int[] itemInfo = LocalShops.itemList.getItemInfo(item);
+				int[] itemInfo = LocalShops.itemList.getItemInfo(null, item);
 				if(itemInfo == null) continue;
 				//itemId=dataValue,buyPrice:buyStackSize,sellPrice:sellStackSize,stock
 				fileOutput.add(itemInfo[0] + "=" + itemInfo[1] + "," + buyPrice + ";" + buySize

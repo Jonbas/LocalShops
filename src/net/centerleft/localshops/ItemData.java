@@ -4,10 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
@@ -79,19 +84,63 @@ public class ItemData {
 		}
 	};
 		
-	public int[] getItemInfo(String name) {
+	/**
+	 * Tries to match item name passed in string.  If sender is passed to function, will return message
+	 * to sender if no matches are found or print list of matches if multiple are found.
+	 * @param sender
+	 * @param name
+	 * @return Will return null if no matches are found.
+	 */
+	public int[] getItemInfo(CommandSender sender, String name) {
+	
 		int index = itemName.indexOf(name);
-		if (index == -1) return null;
+		if (index == -1) {
+			Pattern myPattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
+			Matcher myMatcher = myPattern.matcher("tmp");
+			
+			ArrayList<String> foundMatches = new ArrayList<String>();
+			foundMatches.clear();
+			
+			Iterator<String> itr = itemName.iterator();
+			while(itr.hasNext()) {
+				String thisItem = itr.next();
+				myMatcher.reset(thisItem);
+				if(myMatcher.find()) foundMatches.add(thisItem);
+			}
+			
+			if (foundMatches.size() == 1) {
+				index = itemName.indexOf(foundMatches.get(0));
+			} else {
+				if(sender != null) {
+					if(foundMatches.size() > 1) {
+						sender.sendMessage(name + ChatColor.AQUA + " matched multiple items:" );
+						for(String foundName: foundMatches) {
+							sender.sendMessage("  " + foundName );
+						}
+					} else {
+						sender.sendMessage(name + ChatColor.AQUA + " did not match any items.");
+					}
+				}
+				return null;
+			}
+		}
 		int[] data = { itemNumber.get(index), itemData.get(index).dataValue };
 		return data;
 	}
-		
-	public ArrayList<String> getItemName(int itemNumber) {
+	
+	/**
+	 * Returns list of all itemNames that match the itemId supplied.
+	 * 
+	 * @param sender
+	 * @param itemNumber
+	 * @return Will return list of all found matches.
+	 */
+	public ArrayList<String> getItemName( int itemId) {
 		ArrayList<String> foundNames = new ArrayList<String>();
 		
 		
 		for( int i = 0; i < this.itemNumber.size(); i++ ){
-			if( this.itemNumber.get(i) == itemNumber) {
+			if( itemNumber.get(i) == itemId) {
 				foundNames.add(this.itemName.get(i));
 			}
 		}
@@ -125,17 +174,31 @@ public class ItemData {
 		}
 	}
 
-	public ItemStack getItem(String arg0) {
+	public ItemStack getItem( CommandSender sender, String arg0) {
 		
 		int[] info = null;
 		ItemStack item = null;
 		
 		try {
 			ArrayList<String> list = getItemName(Integer.parseInt(arg0));
-			info = getItemInfo(list.get(0));
+			if(list.size() == 1) {
+				info = getItemInfo( sender, list.get(0));
+			} else {
+				if(sender != null) {
+					if(list.size() > 1) {
+						sender.sendMessage(arg0 + ChatColor.AQUA + " matched multiple items:" );
+						for(String foundName: list) {
+							sender.sendMessage("  " + foundName );
+						}
+					} else {
+						sender.sendMessage(arg0 + ChatColor.AQUA + " did not match any items.");
+					}
+				}
+			}
+			
 
 		} catch (NumberFormatException ex) {
-			info = getItemInfo(arg0);
+			info = getItemInfo( sender, arg0);
 		}
 		
 		if( info != null) {

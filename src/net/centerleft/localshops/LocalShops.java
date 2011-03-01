@@ -138,6 +138,8 @@ public class LocalShops extends JavaPlugin {
 					Commands.sellItemShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("add")) {
 					Commands.addItemShop(sender, trimmedArgs);
+				} else if(args[0].equalsIgnoreCase("buy")) {
+					Commands.buyItemShop(sender, trimmedArgs);
 				}
 				
 			} else {

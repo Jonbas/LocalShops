@@ -332,9 +332,9 @@ public class Commands {
 			}
 			
 			if(args.length == 3) {
-				item = LocalShops.itemList.getItem(args[1]);
+				item = LocalShops.itemList.getItem(player, args[1]);
 				if(item == null) {
-					player.sendMessage(ChatColor.AQUA + "Could not find an item of that type.");
+					player.sendMessage(ChatColor.AQUA + "Could not complete the sale.");
 					return false;
 				}
 				
@@ -504,9 +504,9 @@ public class Commands {
 			}
 			
 			if(args.length == 3) {
-				item = LocalShops.itemList.getItem(args[1]);
+				item = LocalShops.itemList.getItem(player, args[1]);
 				if(item == null) {
-					player.sendMessage(ChatColor.AQUA + "Could not find an item of that type.");
+					player.sendMessage(ChatColor.AQUA + "Could not add the item to shop.");
 					return false;
 				}
 				
@@ -542,9 +542,9 @@ public class Commands {
 			
 			//check if the shop is buying that item
 			if(!shop.getItems().contains(itemName)) {
-				int itemInfo[] = LocalShops.itemList.getItemInfo(itemName);
+				int itemInfo[] = LocalShops.itemList.getItemInfo(player, itemName);
 				if( itemInfo == null ) {
-					player.sendMessage(ChatColor.AQUA + "Could not find an item of that type.");
+					player.sendMessage(ChatColor.AQUA + "Could not add the item to shop.");
 					return false;
 				}
 				shop.addItem(itemInfo[0], itemInfo[1], 0, 1, 0, 1, 0);
@@ -597,5 +597,149 @@ public class Commands {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Processes buy command.
+	 *  
+	 * @param sender
+	 * @param args
+	 * @return
+	 *   true - if command succeeds
+	 *   false otherwise
+	 */
+	public static boolean buyItemShop(CommandSender sender, String[] args) {
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		if(!ShopsPluginListener.useiConomy) return false;
+		
+		/* Available formats:
+		 *  /shop buy item #
+		 */
+		
+		Player player = (Player)sender;
+		String playerName = player.getName();
+
+		//get the shop the player is currently in
+		if( PlayerData.playerShopsList(playerName).size() == 1 ) {
+			String shopName = PlayerData.playerShopsList(playerName).get(0);
+			Shop shop = ShopData.shops.get(shopName);
+			
+			ItemStack item = null;
+			String itemName = null;
+			int amount = 0;
+			
+			if(args.length == 3) {
+				item = LocalShops.itemList.getItem(player, args[1]);
+				if(item == null) {
+					player.sendMessage(ChatColor.AQUA + "Could not complete the purchase.");
+					return false;
+				} else {
+					int itemData = 0;
+					if( item.getData() != null) itemData = item.getData().getData();
+					itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
+				}
+				
+				//check if the shop is selling that item
+				if(!shop.getItems().contains(itemName) || shop.getItemBuyPrice(itemName) == 0) {
+					player.sendMessage(ChatColor.AQUA + "Sorry, " + ChatColor.WHITE + shopName 
+							+ ChatColor.AQUA + " is not selling " + ChatColor.WHITE + itemName 
+							+ ChatColor.AQUA + " right now." );
+					return false;
+				}
+				
+				int totalAmount = shop.getItemStock(itemName);
+
+				try {
+					int numberToRemove = Integer.parseInt(args[2]);
+					if( numberToRemove > totalAmount) {
+						amount = totalAmount;
+					} else {
+						amount = numberToRemove;
+					}
+				} catch (NumberFormatException ex2 ) {
+					if( args[2].equalsIgnoreCase("all")) {
+						amount = totalAmount;
+					} else {
+						player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop buy <itemName> <# to buy>");
+						return false;
+					}
+				}
+				
+			} else {
+				player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop buy <itemName> <# to buy>");
+				return false;
+			}
+			
+			//check how many items the user has room for
+			//TODO
+			
+			//calculate cost
+			int bundles = amount / shop.itemBuyAmount(itemName);
+			int itemPrice = shop.getItemBuyPrice(itemName);
+			//recalculate # of items since may not fit cleanly into bundles
+			amount = bundles * shop.itemBuyAmount(itemName);
+			int totalCost = bundles * itemPrice;
+			
+			//try to pay the shop owner
+			if( !isShopController(player, shop )) {
+				if(!PlayerData.payPlayer( playerName, shop.getShopOwner(), totalCost)) {
+					//player doesn't have enough money
+					//get player's balance and calculate how many it can buy
+					long playerBalance = PlayerData.getBalance(playerName);
+					int bundlesCanAford = (int)playerBalance / itemPrice;
+					totalCost = bundlesCanAford * itemPrice;
+					amount = bundlesCanAford * shop.itemSellAmount(itemName);
+					if(!PlayerData.payPlayer( playerName, shop.getShopOwner(), totalCost)) {
+						player.sendMessage(ChatColor.AQUA + "Unexpected money problem: could not complete sale.");
+						return false;
+					}
+				}
+			}
+			
+			shop.removeStock(itemName, amount);
+			
+			//add number of items to the buyer
+			//Start by searching the inventory for any stacks that match the item we have
+			for(int i: player.getInventory().all(item.getType()).keySet()) {
+				if( amount == 0 ) continue;
+				ItemStack thisStack = player.getInventory().getItem(i);
+				if( thisStack.getType().equals(item.getType()) && thisStack.getDurability() == item.getDurability()) {
+					if( thisStack.getAmount() < 64 ) {
+						int remainder = 64 - thisStack.getAmount();
+						if(remainder <= amount) {
+							amount -= remainder;
+							thisStack.setAmount(64); 
+						} else {
+							thisStack.setAmount(64 - remainder + amount);
+							amount = 0;
+						}
+					} 
+				}
+				
+			}
+			
+			while( amount > 0 ) {
+				int nextEmpty = player.getInventory().firstEmpty();
+				if( nextEmpty >= 0 && nextEmpty < player.getInventory().getSize()) {
+					if( amount >= 64 ) {
+						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), 64));
+						amount -= 64;
+					} else {
+						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), amount));
+						amount = 0;
+					}
+				} else {
+					continue;
+				}
+			}
+			
+
+			ShopData.saveShop(shop);
+
+		} else {
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+		}
+			
+		return true;
 	}
 }
