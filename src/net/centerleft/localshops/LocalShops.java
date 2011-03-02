@@ -125,6 +125,8 @@ public class LocalShops extends JavaPlugin {
 			if(args.length >= 1) {
 				if(args[0].equalsIgnoreCase("create")) {
 					Commands.createShop(sender, trimmedArgs);
+				} else if(args[0].equalsIgnoreCase("destroy")) {
+					Commands.destroyShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("list")) {
 					Commands.listShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("reload")) {
@@ -138,8 +140,12 @@ public class LocalShops extends JavaPlugin {
 					Commands.sellItemShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("add")) {
 					Commands.addItemShop(sender, trimmedArgs);
-				} else if(args[0].equalsIgnoreCase("buy")) {
+				} else if(args[0].equalsIgnoreCase("remove")) {
+					Commands.removeItemShop(sender, trimmedArgs);
+				}else if(args[0].equalsIgnoreCase("buy")) {
 					Commands.buyItemShop(sender, trimmedArgs);
+				} else if(args[0].equalsIgnoreCase("set")) {
+					Commands.setItemShop(sender, trimmedArgs);
 				}
 				
 			} else {

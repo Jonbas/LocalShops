@@ -551,6 +551,7 @@ public class Commands {
 			}
 			
 			shop.addStock(itemName, amount);
+			player.sendMessage(ChatColor.AQUA + "You sold " + amount + " " + ChatColor.WHITE + itemName);
 			
 			player.sendMessage(ChatColor.AQUA + "Succesfully added " + ChatColor.WHITE + itemName 
 					+ ChatColor.AQUA + " to the shop. Stock is now " + ChatColor.WHITE + shop.getItemStock(itemName));
@@ -698,6 +699,8 @@ public class Commands {
 			
 			shop.removeStock(itemName, amount);
 			
+			player.sendMessage(ChatColor.AQUA + "You purchased " + amount + " " + ChatColor.WHITE + itemName); 
+			
 			//add number of items to the buyer
 			//Start by searching the inventory for any stacks that match the item we have
 			for(int i: player.getInventory().all(item.getType()).keySet()) {
@@ -735,6 +738,330 @@ public class Commands {
 			
 
 			ShopData.saveShop(shop);
+
+		} else {
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+		}
+			
+		return true;
+	}
+	
+	/**
+	 * Processes set command.
+	 *  
+	 * @param sender
+	 * @param args
+	 * @return
+	 *   true - if command succeeds
+	 *   false otherwise
+	 */
+	public static boolean setItemShop(CommandSender sender, String[] args) {
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		
+		/* Available formats:
+		 *  /shop set buy itemName price stackSize
+		 *  /shop set sell itemName price stackSize
+		 *  /shop set manager +managerName +managerName -managerName
+		 *  /shop set owner ownerName
+		 */
+		
+		Player player = (Player)sender;
+		String playerName = player.getName();
+
+		//get the shop the player is currently in
+		if( PlayerData.playerShopsList(playerName).size() == 1 ) {
+			String shopName = PlayerData.playerShopsList(playerName).get(0);
+			Shop shop = ShopData.shops.get(shopName);
+			
+			if(!isShopController(player, shop)) return false;
+			
+			if( args.length == 1) {
+				//TODO print /shop set help message
+				return true;
+			}
+			
+			
+			if( args[1].equalsIgnoreCase("buy")) {
+				//  /shop set buy ItemName Price <bundle size>
+				
+				ItemStack item = null;
+				String itemName = null;
+				
+				if(args.length == 4 || args.length == 5) {
+					int price = 0;
+					int bundle = 1;
+					
+					item = LocalShops.itemList.getItem(player, args[2]);
+					if(item == null) {
+						player.sendMessage(ChatColor.AQUA + "Could not complete command.");
+						return false;
+					} else {
+						int itemData = 0;
+						if( item.getData() != null) itemData = item.getData().getData();
+						itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
+					}
+				
+					if(!shop.getItems().contains(itemName)) {
+						player.sendMessage(ChatColor.AQUA + "Shop is not yet selling " + ChatColor.WHITE + itemName );
+						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/shop add");
+						return false;
+					}
+					
+					try {
+						if(args.length == 4 ) {
+							price = Integer.parseInt(args[3]);
+							bundle = shop.itemBuyAmount(itemName);
+						} else {
+							price = Integer.parseInt(args[3]);
+							bundle = Integer.parseInt(args[4]);
+						}
+					} catch(NumberFormatException ex1) {
+						player.sendMessage(ChatColor.AQUA + "The price and bundle size must be a number." );
+						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set buy [item name] [price] <bundle size>");
+						return false;
+					}
+					
+					shop.setItemBuyPrice(itemName, price);
+					shop.setItemBuyAmount(itemName, bundle);
+					
+					ShopData.saveShop(shop);
+					
+				} else {
+					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set buy [item name] [price] <bundle size>");
+					return true;
+				}
+				
+			} else if ( args[1].equalsIgnoreCase("sell")) {
+				
+				//  /shop set sell ItemName Price <bundle size>
+				
+				ItemStack item = null;
+				String itemName = null;
+				
+				if(args.length == 4 || args.length == 5) {
+					int price = 0;
+					int bundle = 1;
+					
+					item = LocalShops.itemList.getItem(player, args[2]);
+					if(item == null) {
+						player.sendMessage(ChatColor.AQUA + "Could not complete command.");
+						return false;
+					} else {
+						int itemData = 0;
+						if( item.getData() != null) itemData = item.getData().getData();
+						itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
+					}
+				
+					if(!shop.getItems().contains(itemName)) {
+						player.sendMessage(ChatColor.AQUA + "Shop is not yet buying " + ChatColor.WHITE + itemName );
+						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/shop add");
+						return false;
+					}
+					
+					try {
+						if(args.length == 4 ) {
+							price = Integer.parseInt(args[3]);
+							bundle = shop.itemSellAmount(itemName);
+						} else {
+							price = Integer.parseInt(args[3]);
+							bundle = Integer.parseInt(args[4]);
+						}
+					} catch(NumberFormatException ex1) {
+						player.sendMessage(ChatColor.AQUA + "The price and bundle size must be a number." );
+						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set sell [item name] [price] <bundle size>");
+						return false;
+					}
+					
+					shop.setItemSellPrice(itemName, price);
+					shop.setItemSellAmount(itemName, bundle);
+					
+					ShopData.saveShop(shop);
+					
+				} else {
+					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set sell [item name] [price] <bundle size>");
+					return true;
+				}
+
+				
+			} else if ( args[1].equalsIgnoreCase("manager")) {
+				String[] managers = shop.getShopManagers();
+				for(String newName: args ) {
+					if(newName.equalsIgnoreCase("set") || newName.equalsIgnoreCase("manager")) {
+						continue;
+					}
+					
+					String partial = "";
+					String[] part = newName.split("\\+");
+					if(part.length == 2) {
+						for(String name: managers) {
+							partial += name + ",";
+						}
+						partial += part[1];
+						managers = partial.split(",");
+					}
+					
+					partial = "";
+					part = newName.split("\\-");
+					if(part.length == 2) {
+						for(String name: managers) {
+							if(name.equalsIgnoreCase(part[1])) continue;
+							partial += name + ",";
+						}
+						managers = partial.split(",");
+					}
+					
+				}
+				shop.setShopManagers(managers);
+				
+			} else if ( args[1].equalsIgnoreCase("owner")) {
+				if(args.length == 3) {
+				if(!shop.getShopOwner().equalsIgnoreCase(player.getName())) {
+					player.sendMessage(ChatColor.AQUA + "You must be the shop owner to set this.");
+					player.sendMessage(ChatColor.AQUA + "The current shop owner is " + ChatColor.WHITE + shop.getShopOwner());
+					return false;
+				}
+					shop.setShopOwner(args[2]);
+				}
+			}
+
+			ShopData.saveShop(shop);
+
+		} else {
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			return false;
+		}
+			
+		return true;
+	}
+	
+	
+	/**
+	 * Processes remove command.  Removes item from shop and returns stock to player.
+	 *  
+	 * @param sender
+	 * @param args
+	 * @return
+	 *   true - if command succeeds
+	 *   false otherwise
+	 */
+	public static boolean removeItemShop(CommandSender sender, String[] args) {
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		
+		/* Available formats:
+		 *  /shop remove itemName
+		 */
+		
+		Player player = (Player)sender;
+		String playerName = player.getName();
+
+		//get the shop the player is currently in
+		if( PlayerData.playerShopsList(playerName).size() == 1 ) {
+			String shopName = PlayerData.playerShopsList(playerName).get(0);
+			Shop shop = ShopData.shops.get(shopName);
+			
+			if(!isShopController(player, shop)) {
+				player.sendMessage(ChatColor.AQUA + "You must be the shop owner or manager to remove an item.");
+				return false;
+			}
+			
+			ItemStack item = LocalShops.itemList.getItem(player, args[2]);
+			String itemName;
+			
+			if(item == null) {
+				player.sendMessage(ChatColor.AQUA + "Could not complete command.");
+				return false;
+			} else {
+				int itemData = 0;
+				if( item.getData() != null) itemData = item.getData().getData();
+				itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
+			}
+			
+			if(!shop.getItems().contains(itemName)) {
+				player.sendMessage(ChatColor.AQUA + "The shop is not selling " + ChatColor.WHITE + itemName);
+				return true;
+			}
+			
+			int amount = shop.getItemStock(itemName);
+			shop.removeItem(itemName);
+			
+			player.sendMessage(ChatColor.WHITE + itemName + ChatColor.AQUA + " removed from the shop. " );
+			player.sendMessage("" + ChatColor.WHITE + amount + ChatColor.AQUA + " have been returned to your inventory"); 
+			
+			//add number of items to the buyer
+			//Start by searching the inventory for any stacks that match the item we have
+			for(int i: player.getInventory().all(item.getType()).keySet()) {
+				if( amount == 0 ) continue;
+				ItemStack thisStack = player.getInventory().getItem(i);
+				if( thisStack.getType().equals(item.getType()) && thisStack.getDurability() == item.getDurability()) {
+					if( thisStack.getAmount() < 64 ) {
+						int remainder = 64 - thisStack.getAmount();
+						if(remainder <= amount) {
+							amount -= remainder;
+							thisStack.setAmount(64); 
+						} else {
+							thisStack.setAmount(64 - remainder + amount);
+							amount = 0;
+						}
+					} 
+				}
+				
+			}
+			
+			while( amount > 0 ) {
+				int nextEmpty = player.getInventory().firstEmpty();
+				if( nextEmpty >= 0 && nextEmpty < player.getInventory().getSize()) {
+					if( amount >= 64 ) {
+						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), 64));
+						amount -= 64;
+					} else {
+						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), amount));
+						amount = 0;
+					}
+				} else {
+					continue;
+				}
+			}
+			
+
+			ShopData.saveShop(shop);
+
+		} else {
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+		}
+			
+		return true;
+	}
+	
+	/**
+	 * Destroys current shop.  Deleting file and removing from tree.
+	 *  
+	 * @param sender
+	 * @param args
+	 * @return
+	 *   true - if command succeeds
+	 *   false otherwise
+	 */
+	public static boolean destroyShop(CommandSender sender, String[] args) {
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		
+		/* Available formats:
+		 *  /shop remove itemName
+		 */
+		
+		Player player = (Player)sender;
+		String playerName = player.getName();
+
+		//get the shop the player is currently in
+		if( PlayerData.playerShopsList(playerName).size() == 1 ) {
+			String shopName = PlayerData.playerShopsList(playerName).get(0);
+			Shop shop = ShopData.shops.get(shopName);
+			
+			if(!shop.getShopOwner().equalsIgnoreCase(player.getName())) {
+				player.sendMessage(ChatColor.AQUA + "You must be the shop owner to destroy it.");
+				return false;
+			}
+			
+			ShopData.deleteShop(shop);
 
 		} else {
 			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);

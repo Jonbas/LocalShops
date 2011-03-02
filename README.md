@@ -17,16 +17,17 @@ Implemented
 * /shop list buy|sell
 * /shop buy|sell
 * /shop add
+* /shop remove
+* /shop set sell
+* /shop set add
+* /shop set manager
+* /shop set owner
+* /shop destroy
 * created items.txt with unique names for each item and data combinaiton
 
 Still TODO
 -----------
 
-* add default world to files that don't start with them (converting old format)
-* Build user commands 
-- /shop remove
-- /shop set (buy|sell|stacksize)
-- /shop destroy
 * hook into iConomy
 * hook into Permissions
 

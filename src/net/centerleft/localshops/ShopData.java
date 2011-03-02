@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.bukkit.Location;
+
+import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
 
 public class ShopData {
@@ -244,6 +247,34 @@ public class ShopData {
 			System.out.println( LocalShops.pluginName + ": Error - Could not create file " + shopFile.getName());
 			return false;
 		}
+		return true;
+	}
+
+	public static boolean deleteShop(Shop shop) {
+		long[] xyzA = shop.getLocation();
+		BookmarkedResult res = new BookmarkedResult();
+		
+		res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyzA[0], xyzA[1], xyzA[2] );
+		
+		//get the shop's tree node and delete it
+		for( PrimitiveCuboid shopLocation : res.results) {
+			
+			//for each shop that you find, check to see if we're already in it
+			//this should only find one shop node
+			if( shopLocation.name == null ) continue;
+			
+			LocalShops.cuboidTree.delete(shopLocation);
+		}
+		
+		//delete the file from the directory
+		String filePath = LocalShops.folderPath + LocalShops.shopsPath + shop.getShopName() + ".shop";
+		File shopFile = new File( filePath );
+		shopFile.delete();
+
+		//remove shop from data structure
+		String name = shop.getShopName();
+		shops.remove(name);
+			
 		return true;
 	}
 }

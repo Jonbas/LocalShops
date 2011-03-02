@@ -268,4 +268,37 @@ public class Shop {
 		return true;
 	}
 
+	public void setItemBuyPrice(String itemName, int price) {
+		int buySize = shopInventory.get(itemName).buyStackSize;
+		shopInventory.get(itemName).setBuy(price, buySize);
+		
+	}
+
+	public void setItemBuyAmount(String itemName, int buySize) {
+		int price = shopInventory.get(itemName).buyStackPrice;
+		shopInventory.get(itemName).setBuy(price, buySize);
+	}
+
+	public void setItemSellPrice(String itemName, int price) {
+		int sellSize = shopInventory.get(itemName).sellStackSize;
+		shopInventory.get(itemName).setSell(price, sellSize);
+		
+	}
+
+	public void setItemSellAmount(String itemName, int sellSize) {
+		int price = shopInventory.get(itemName).sellStackPrice;
+		shopInventory.get(itemName).setBuy(price, sellSize );
+		
+	}
+
+	public void removeItem(String itemName) {
+		shopInventory.remove(itemName);
+		
+	}
+
+	public long[] getLocation() {
+		
+		return shopLocation.getLocation();
+	}
+
 }
