@@ -8,6 +8,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+
+import com.nijiko.permissions.PermissionHandler;
 
 import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
@@ -70,7 +74,49 @@ public class Commands {
 	}
 	
 	static boolean canUseCommand( CommandSender sender, String[] args ) {
-		//TODO add control tests
+		boolean useManager = ShopsPluginListener.useGroupManager;
+		PermissionHandler pm = ShopsPluginListener.gmPermissionCheck;
+		
+		Player player = (Player)sender;
+		
+		if(args.length >= 1) {
+			if(args[0].equalsIgnoreCase("create")) {
+				if(useManager) {
+					return pm.has(player, "localshops.create");
+				} else if ( sender.isOp() ) {
+					return true;
+				}
+			} else if(args[0].equalsIgnoreCase("destroy")) {
+				if(useManager) {
+					return pm.has(player, "localshops.destroy");
+				} else if ( sender.isOp() ) {
+					return true;
+				}
+				
+			} else if(args[0].equalsIgnoreCase("reload")) {
+				if(useManager) {
+					return pm.has(player, "localshops.reload");
+				} else if ( sender.isOp() ) {
+					return true;
+				}
+				
+			} else if(args[0].equalsIgnoreCase("sell") || args[0].equalsIgnoreCase("buy") 
+					|| args[0].equalsIgnoreCase("list")) {
+				if(useManager) {
+					return pm.has(player, "localshops.buysell");
+				} else {
+					return true;
+				}
+			} else if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove") 
+					|| args[0].equalsIgnoreCase("set")) {
+				if(useManager) {
+					return pm.has(player, "localshops.manage");
+				} else {
+					return true;
+				}
+			}
+				
+		}
 		return true;
 	}
 

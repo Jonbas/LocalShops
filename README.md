@@ -24,11 +24,11 @@ Implemented
 * /shop set owner
 * /shop destroy
 * created items.txt with unique names for each item and data combinaiton
+* iConomy 4.0+ integration
 
 Still TODO
 -----------
 
-* hook into iConomy
 * hook into Permissions
 
 Eventual Goal:

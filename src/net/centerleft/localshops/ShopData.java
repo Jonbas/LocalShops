@@ -37,6 +37,10 @@ public class ShopData {
 			defaultWorld = true;
 		}
 		
+		if(ShopsPluginListener.useiConomy) {
+			currencyName = ShopsPluginListener.iConomy.getBank().getCurrency();
+		}
+		
 		
 		File[] shopsList = shopsDir.listFiles();
 		for( File shop : shopsList ) {
