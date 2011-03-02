@@ -122,8 +122,10 @@ public class ShopData {
 								tempShop.setShopCreator(split[1]);
 								
 							} else if(split[0].equalsIgnoreCase("managers")) {
-								String[] args = split[1].split(",");
-								tempShop.setShopManagers(args);
+								if(split.length > 1) {
+									String[] args = split[1].split(",");
+									tempShop.setShopManagers(args);
+								}
 							} else if(split[0].equalsIgnoreCase("world")) {
 								tempShop.setWorldName(split[1]);
 							} else if(split[0].equalsIgnoreCase("position")) {
@@ -167,6 +169,8 @@ public class ShopData {
 								} else {
 									tempShop.setUnlimited(false);
 								}
+								
+								
 							}
 						}
 						
@@ -214,8 +218,9 @@ public class ShopData {
 					outString = outString + manager + ",";
 				} 
 			} else {
-				outString = "none";
+				outString = "";
 			}
+			
 			fileOutput.add("managers=" + outString + "\n");
 			fileOutput.add("creator=" + shop.getShopCreator() + "\n");
 			fileOutput.add("position=" + shop.getShopPositionString() + "\n");
