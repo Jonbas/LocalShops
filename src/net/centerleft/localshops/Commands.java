@@ -70,12 +70,20 @@ public class Commands {
 				}
 			}
 		}
+		if(args.length != 2) {
+			sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop create [ShopName]");
+		}
+		if(!canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+		}
 		return false;
 	}
 	
 	static boolean canUseCommand( CommandSender sender, String[] args ) {
-		boolean useManager = ShopsPluginListener.useGroupManager;
+		boolean useManager = ShopsPluginListener.usePermissions;
 		PermissionHandler pm = ShopsPluginListener.gmPermissionCheck;
+		
+		if(!(sender instanceof Player)) return false;
 		
 		Player player = (Player)sender;
 		
@@ -121,9 +129,39 @@ public class Commands {
 	}
 
 	public static void printHelp(CommandSender sender, String[] args) {
-		// TODO Auto-generated method stub
-		sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "Looks like you need some help?");
+		sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "Here are the available commands [required] <optional>" );
+
+		String[] sell = { "sell" };
+		if(canUseCommand(sender, sell)) {
+			sender.sendMessage( ChatColor.WHITE + "   /shop list <buy|sell> " + ChatColor.AQUA + "- List the shop's inventory." );
+			sender.sendMessage( ChatColor.WHITE + "   /shop buy [itemname] [number] " + ChatColor.AQUA + "- Buy this item." );
+			sender.sendMessage( ChatColor.WHITE + "   /shop sell <#|all>" + ChatColor.AQUA + " - Sell the item in your hand." );
+			sender.sendMessage( ChatColor.WHITE + "   /shop sell [itemname] [number]" );
+		}
 		
+		String[] set = { "set" };
+		if(canUseCommand(sender, set)) {
+			sender.sendMessage( ChatColor.WHITE + "   /shop add" + ChatColor.AQUA + " - Add the item that you are holding to the shop.");
+			sender.sendMessage( ChatColor.WHITE + "   /shop remove [itemname]" + ChatColor.AQUA + " - Stop selling item in shop." );
+			sender.sendMessage( ChatColor.WHITE + "   /shop set" + ChatColor.AQUA + " - Display list of set commands" );
+			
+		}
+		
+		String[] create = { "create" };
+		if(canUseCommand(sender, create)) {
+			sender.sendMessage( ChatColor.WHITE + "   /shop create [ShopName]" + ChatColor.AQUA + " - Create a shop at your location.");
+			
+		}
+		
+		String[] destroy = { "destroy" };
+		if(canUseCommand(sender, destroy)) {
+			sender.sendMessage( ChatColor.WHITE + "   /shop destroy" + ChatColor.AQUA + " - Destroy the shop you're in.");
+		}
+		
+		String[] reload = { "reload" };
+		if(canUseCommand(sender, reload)) {
+			sender.sendMessage( ChatColor.WHITE + "   /shop reload" + ChatColor.AQUA + " - Reload the plugin and shop files.");
+		}
 	}
 	
 	private static boolean shopPositionOk( Player player, long[] xyzA, long[] xyzB ) {
@@ -205,6 +243,8 @@ public class Commands {
 			} else {
 				player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop list");
 			}
+		} else {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
 		}
 	}
 	
@@ -315,8 +355,14 @@ public class Commands {
 	 *   false otherwise
 	 */
 	public static boolean sellItemShop(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
-		if(!ShopsPluginListener.useiConomy) return false;
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+			return false;
+		}
+		if(!ShopsPluginListener.useiConomy) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Can not complete. Can not find iConomy.");
+			return false;
+		}
 		
 		/* Available formats:
 		 *  /shop sell
@@ -429,13 +475,6 @@ public class Commands {
 			amount = bundles * shop.itemSellAmount(itemName);
 			int totalCost = bundles * itemPrice;
 			
-			//try to pay the player
-			if(shop.isUnlimited()) {
-				player.sendMessage("Shop is unlimited.");
-			} else {
-				player.sendMessage("Shop is not unlimited.");
-			}
-			
 			if(shop.isUnlimited()) {
 				PlayerData.payPlayer(playerName, totalCost);
 			} else {
@@ -498,7 +537,10 @@ public class Commands {
 	 * @return true if the commands succeeds, otherwise false
 	 */
 	public static boolean addItemShop(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+			return false;
+		}
 		
 		/* Available formats:
 		 *  /shop add
@@ -530,6 +572,7 @@ public class Commands {
 			
 				item = player.getInventory().getItemInHand();
 				if( item == null || item.getType().getId() == Material.AIR.getId()) {
+					sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "To add an item to the shop hold it in your hand.");
 					return true;
 				}
 	
@@ -672,8 +715,14 @@ public class Commands {
 	 *   false otherwise
 	 */
 	public static boolean buyItemShop(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
-		if(!ShopsPluginListener.useiConomy) return false;
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+			return false;
+		}
+		if(!ShopsPluginListener.useiConomy) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Can not complete. Can not find iConomy.");
+			return false;
+		}
 		
 		/* Available formats:
 		 *  /shop buy item #
@@ -819,7 +868,10 @@ public class Commands {
 	 *   false otherwise
 	 */
 	public static boolean setItemShop(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+			return false;
+		}
 		
 		/* Available formats:
 		 *  /shop set buy itemName price stackSize
@@ -1014,7 +1066,7 @@ public class Commands {
 					shop.setShopOwner(args[2]);
 				}
 			} else {
-				player.sendMessage(ChatColor.AQUA + "The following set commands are available: ");
+				player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "The following set commands are available: ");
 				player.sendMessage("   " + "/shop set buy [item name] [price] <bundle size>");
 				player.sendMessage("   " + "/shop set sell [item name] [price] <bundle size>");
 				player.sendMessage("   " + "/shop set manager +[playername] -[playername2]");
@@ -1024,7 +1076,7 @@ public class Commands {
 			ShopData.saveShop(shop);
 
 		} else {
-			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
 			return false;
 		}
 			
@@ -1042,7 +1094,10 @@ public class Commands {
 	 *   false otherwise
 	 */
 	public static boolean removeItemShop(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+			return false;
+		}
 		
 		/* Available formats:
 		 *  /shop remove itemName
@@ -1145,7 +1200,10 @@ public class Commands {
 	 *   false otherwise
 	 */
 	public static boolean destroyShop(CommandSender sender, String[] args) {
-		if(!(sender instanceof Player) || !canUseCommand(sender, args)) return false;
+		if(!(sender instanceof Player) || !canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+			return false;
+		}
 		
 		/* Available formats:
 		 *  /shop remove itemName
@@ -1164,6 +1222,8 @@ public class Commands {
 				return false;
 			}
 			
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.WHITE 
+					+ shop.getShopName() + ChatColor.AQUA + " has been destroyed");
 			ShopData.deleteShop(shop);
 
 		} else {

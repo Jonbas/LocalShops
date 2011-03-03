@@ -6,14 +6,15 @@ import org.bukkit.event.server.ServerListener;
 
 import com.nijiko.coelho.iConomy.iConomy;
 import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class ShopsPluginListener extends ServerListener {
 	private final LocalShops plugin;
 	public static iConomy iConomy;
 	
-	public static GroupManager groupManager;
+	public static Permissions permissions;
 	public static PermissionHandler gmPermissionCheck; 
-	public static boolean useGroupManager = false;
+	public static boolean usePermissions = false;
 	public static boolean useiConomy = false;
 	
 	public ShopsPluginListener(LocalShops instance) { 
@@ -28,11 +29,13 @@ public class ShopsPluginListener extends ServerListener {
             useiConomy = true;
         }
         
-        if(event.getPlugin().getDescription().getName().equals("GroupManager")) {
-        	groupManager = (GroupManager)event.getPlugin();
-        	System.out.print("LocalShops: Attached to GroupManager");
-        	useGroupManager = true;
-        }
+        if(event.getPlugin().getDescription().getName().equals("Permissions")) {
+        	permissions = (Permissions)event.getPlugin();
+        	System.out.print("LocalShops: Attached to Permissions");
+        	usePermissions = true;
+            
+            
+        } 
     }
     
     @Override
@@ -42,10 +45,10 @@ public class ShopsPluginListener extends ServerListener {
             System.out.println("LocalShops: Lost connection to iConomy.");
             useiConomy = false;
     	}
-        if(event.getPlugin().getDescription().getName().equals("GroupManager")) {
-        	groupManager = (GroupManager)event.getPlugin();
-        	System.out.print("LocalShops: Lost connection to GroupManager");
-        	useGroupManager = false;
+        if(event.getPlugin().getDescription().getName().equals("Permissions")) {
+        	permissions = (Permissions)event.getPlugin();
+        	System.out.print("LocalShops: Lost connection to Permissions");
+        	usePermissions = false;
         }
     }
 }

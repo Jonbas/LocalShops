@@ -25,11 +25,13 @@ Implemented
 * /shop destroy
 * created items.txt with unique names for each item and data combinaiton
 * iConomy 4.0+ integration
+* GroupManager 0.99c integrated
 
 Still TODO
 -----------
 
-* hook into Permissions
+* add Help info
+* make sure every command has a responce to the player
 
 Eventual Goal:
 -----------

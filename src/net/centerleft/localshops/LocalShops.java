@@ -19,7 +19,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
+import com.nijiko.coelho.iConomy.iConomy;
 import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
 
 import cuboidLocale.BookmarkedResult;
 import cuboidLocale.QuadTree;
@@ -67,20 +69,35 @@ public class LocalShops extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLUGIN_ENABLE, pluginListener, Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLUGIN_DISABLE, pluginListener, Priority.Monitor, this);
 		
-		Plugin p = pm.getPlugin("GroupManager");
+		Plugin p = pm.getPlugin("Permissions");
 		if (p != null) {
             if (!p.isEnabled()) {
                 pm.enablePlugin(p);
             }
-            GroupManager gm = (GroupManager) p;
-            ShopsPluginListener.groupManager = gm;
-            ShopsPluginListener.gmPermissionCheck = gm.getPermissionHandler();
-            System.out.println("HelpPages: GroupManager found.");
-            ShopsPluginListener.useGroupManager = true;
+            Permissions gm = (Permissions) p;
+            ShopsPluginListener.permissions = gm;
+            ShopsPluginListener.gmPermissionCheck = gm.getHandler();
+            System.out.println("LocalShops: Permissions found.");
+            ShopsPluginListener.usePermissions = true;
           
         } else {
-        	System.out.println("HelpPages: GroupManager not found.");
-        	ShopsPluginListener.useGroupManager = false;
+        	System.out.println("LocalShops: Permissions not found.");
+        	ShopsPluginListener.usePermissions = false;
+        }
+		
+		Plugin ic = pm.getPlugin("iConomy");
+		if (ic != null) {
+            if (!ic.isEnabled()) {
+                pm.enablePlugin(ic);
+            }
+            iConomy icon = (iConomy) ic;
+            ShopsPluginListener.iConomy = icon;
+            System.out.println("LocalShops: iConomy found.");
+            ShopsPluginListener.useiConomy = true;
+          
+        } else {
+        	System.out.println("LocalShops: iConomy not found.");
+        	ShopsPluginListener.useiConomy = false;
         }
 		
 		
@@ -146,6 +163,8 @@ public class LocalShops extends JavaPlugin {
 					Commands.buyItemShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("set")) {
 					Commands.setItemShop(sender, trimmedArgs);
+				} else {
+					Commands.printHelp(sender, args);
 				}
 				
 			} else {
