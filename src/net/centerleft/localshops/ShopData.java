@@ -24,6 +24,9 @@ public class ShopData {
 	final static long shopHeight = 3;
 	static String currencyName = "Coin";
 	
+	static long shopCost = 4000;
+	static boolean chargeForShop = false;
+	
 	static void LoadShops( File shopsDir ) {
 		  //initialize and setup the hash of shops
 		shops = new HashMap<String, Shop>();

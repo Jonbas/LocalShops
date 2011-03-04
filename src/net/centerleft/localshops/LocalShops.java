@@ -45,6 +45,9 @@ public class LocalShops extends JavaPlugin {
 	static File shopsDir;
 	static List<World> foundWorlds;
 	
+	static PropertyHandler properties;
+	
+	
 	
 	static ItemData itemList = new ItemData();
 	
@@ -111,6 +114,11 @@ public class LocalShops extends JavaPlugin {
 		
 		//build data table for item names and values
 		itemList.loadData(new File(folderPath + "items.txt"));
+		
+		properties = new PropertyHandler(folderPath + "localshops.properties");
+		properties.load();
+		PluginProperties.loadProperties(properties);
+		properties.save();
 		
 		foundWorlds = getServer().getWorlds();
 		// read the shops into memory

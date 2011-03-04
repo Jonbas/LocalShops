@@ -149,7 +149,7 @@ public class Shop {
 	}
 
 	public void setShopManagers(String[] names) {
-		shopManagers = names.clone();
+		if(names != null) shopManagers = names.clone();
 	}
 
 	public void setLocation(long[] position) {
@@ -287,7 +287,7 @@ public class Shop {
 
 	public void setItemSellAmount(String itemName, int sellSize) {
 		int price = shopInventory.get(itemName).sellStackPrice;
-		shopInventory.get(itemName).setBuy(price, sellSize );
+		shopInventory.get(itemName).setSell(price, sellSize );
 		
 	}
 

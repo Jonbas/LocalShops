@@ -62,6 +62,15 @@ public class Commands {
 				
 				//write the file
 				if( ShopData.saveShop(thisShop) ) { 
+					if(ShopData.chargeForShop) {
+						String[] freeShop = {"freeshop"};
+						if(!canUseCommand(sender, freeShop)) {
+							if(!PlayerData.chargePlayer(player.getName(), ShopData.shopCost)) {
+								player.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "You need " + ShopData.shopCost + " " + ShopData.currencyName + " to create a shop.");
+								return false;
+							}
+						}
+					}
 					player.sendMessage( PlayerData.chatPrefix + ChatColor.WHITE + shopName + ChatColor.AQUA + " was created succesfully.");
 					return true;
 				} else {
@@ -91,6 +100,12 @@ public class Commands {
 			if(args[0].equalsIgnoreCase("create")) {
 				if(useManager) {
 					return pm.has(player, "localshops.create");
+				} else if ( sender.isOp() ) {
+					return true;
+				}
+			} else if(args[0].equalsIgnoreCase("freeshop")) {
+				if(useManager) {
+					return pm.has(player, "localshops.create.free");
 				} else if ( sender.isOp() ) {
 					return true;
 				}
@@ -398,14 +413,14 @@ public class Commands {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
 				}
 				
-				amount = item.getAmount() * shop.itemSellAmount(itemName);
+				amount = item.getAmount();
 				if(args.length == 2) {
 					int totalAmount = 0;
 					for(Integer i : player.getInventory().all(item.getType()).keySet()) {
 						totalAmount += player.getInventory().getItem(i).getAmount();
 					}
 					try {
-						int numberToRemove = Integer.parseInt(args[1]);
+						int numberToRemove = Integer.parseInt(args[1]) * shop.itemSellAmount(itemName);
 						if( numberToRemove > totalAmount) {
 							amount = totalAmount;
 						} else {
@@ -996,6 +1011,7 @@ public class Commands {
 						return false;
 					}
 					
+					
 					shop.setItemSellPrice(itemName, price);
 					shop.setItemSellAmount(itemName, bundle);
 					
@@ -1026,12 +1042,18 @@ public class Commands {
 					
 					String partial = "";
 					String[] part = newName.split("\\+");
+					if(part == null) continue;
 					if(part.length == 2) {
-						for(String name: managers) {
-							partial += name + ",";
+						if(managers == null) {
+							partial += part[1] + ",";
+						} else {
+							for(String name: managers) {
+								partial += name + ",";
+							}
 						}
 						partial += part[1];
 						managers = partial.split(",");
+						
 					}
 					
 					partial = "";
@@ -1047,9 +1069,12 @@ public class Commands {
 				}
 				shop.setShopManagers(managers);
 				
+				
 				String msg = "";
-				for(String name: shop.getShopManagers()) {
-					msg += " " + name;
+				if(shop.getShopManagers() != null) {
+					for(String name: shop.getShopManagers()) {
+						msg += " " + name;
+					}
 				}
 				
 				player.sendMessage(ChatColor.AQUA + "The shop managers have been updated. The current managers are:");

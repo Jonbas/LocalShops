@@ -113,4 +113,28 @@ public class PlayerData {
 		return 0;
 	}
 
+	public static boolean chargePlayer(String shopOwner, long chargeAmount) {
+		if( ShopsPluginListener.useiConomy ) {
+			iConomy ic = ShopsPluginListener.iConomy;
+			if(ic == null) return false;
+			
+			Account account = ic.getBank().getAccount(shopOwner);
+			if(account == null) {
+				ic.getBank().addAccount(shopOwner);
+				account = ic.getBank().getAccount(shopOwner);
+			}
+			double balanceFrom = account.getBalance();
+			long newBalance = (long)Math.floor(balanceFrom) - chargeAmount;
+			if(balanceFrom >= chargeAmount) {
+				account.setBalance(newBalance);
+				account.save();
+				return true;
+			} else {
+				return false;
+			}
+			
+		}
+		return false;
+	}
+
 }
