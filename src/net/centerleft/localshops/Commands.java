@@ -413,22 +413,22 @@ public class Commands {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
 				}
 				
-				amount = item.getAmount();
+				amount = item.getAmount() - (item.getAmount()%shop.itemSellAmount(itemName));
 				if(args.length == 2) {
 					int totalAmount = 0;
 					for(Integer i : player.getInventory().all(item.getType()).keySet()) {
 						totalAmount += player.getInventory().getItem(i).getAmount();
 					}
 					try {
-						int numberToRemove = Integer.parseInt(args[1]) * shop.itemSellAmount(itemName);
+						int numberToRemove = Integer.parseInt(args[1]);
 						if( numberToRemove > totalAmount) {
-							amount = totalAmount;
+							amount = totalAmount - (totalAmount%shop.itemSellAmount(itemName));
 						} else {
-							amount = numberToRemove;
+							amount = numberToRemove - (numberToRemove%shop.itemSellAmount(itemName));
 						}
 					} catch ( NumberFormatException ex1 ) {
 						if(args[1].equalsIgnoreCase("all")) {
-							amount = totalAmount;
+							amount = totalAmount - (totalAmount%shop.itemSellAmount(itemName));
 						} else {
 							player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop sell <# to sell>");
 							return false;							
@@ -459,13 +459,13 @@ public class Commands {
 				try {
 					int numberToRemove = Integer.parseInt(args[2]);
 					if( numberToRemove > totalAmount) {
-						amount = totalAmount;
+						amount = totalAmount - (totalAmount%shop.itemSellAmount(itemName));
 					} else {
-						amount = numberToRemove;
+						amount = numberToRemove - (numberToRemove%shop.itemSellAmount(itemName));
 					}
 				} catch (NumberFormatException ex2 ) {
 					if( args[2].equalsIgnoreCase("all")) {
-						amount = totalAmount;
+						amount = totalAmount - (totalAmount%shop.itemSellAmount(itemName));
 					} else {
 						player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop sell <itemName> <# to sell>");
 						return false;
@@ -511,9 +511,14 @@ public class Commands {
 			
 			shop.addStock(itemName, amount);
 			
-			player.sendMessage(ChatColor.AQUA + "You sold " + ChatColor.WHITE +  amount + " " 
-					+ itemName + " and gained " + ChatColor.WHITE + totalCost + " " + ShopData.currencyName); 
-			
+			if(isShopController(player, shop )) {
+				player.sendMessage(ChatColor.AQUA + "You added " + ChatColor.WHITE +  amount + " " 
+						+ itemName + ChatColor.AQUA +" to the shop"); 				
+			} else {
+				player.sendMessage(ChatColor.AQUA + "You sold " + ChatColor.WHITE +  amount + " " 
+						+ itemName + ChatColor.AQUA + " and gained " + ChatColor.WHITE + totalCost 
+						+ " " + ShopData.currencyName); 
+			}
 			
 			//remove number of items from seller
 			for(int i: player.getInventory().all(item.getType()).keySet()) {
@@ -779,9 +784,9 @@ public class Commands {
 				try {
 					int numberToRemove = Integer.parseInt(args[2]) * shop.itemBuyAmount(itemName);
 					if( numberToRemove > totalAmount) {
-						amount = totalAmount;
+						amount = totalAmount - (totalAmount%shop.itemBuyAmount(itemName));
 					} else {
-						amount = numberToRemove;
+						amount = numberToRemove - (numberToRemove%shop.itemBuyAmount(itemName));
 					}
 				} catch (NumberFormatException ex2 ) {
 					if( args[2].equalsIgnoreCase("all")) {
@@ -813,7 +818,7 @@ public class Commands {
 					//player doesn't have enough money
 					//get player's balance and calculate how many it can buy
 					long playerBalance = PlayerData.getBalance(playerName);
-					int bundlesCanAford = (int)playerBalance / itemPrice;
+					int bundlesCanAford = (int)Math.floor(playerBalance / itemPrice);
 					totalCost = bundlesCanAford * itemPrice;
 					amount = bundlesCanAford * shop.itemSellAmount(itemName);
 					if(!PlayerData.payPlayer( playerName, shop.getShopOwner(), totalCost)) {
@@ -824,10 +829,13 @@ public class Commands {
 			}
 			
 			shop.removeStock(itemName, amount);
-			
-			player.sendMessage(ChatColor.AQUA + "You purchased " + ChatColor.WHITE +  amount + " " 
-					+ itemName + ChatColor.AQUA + " for " + ChatColor.WHITE + totalCost + " " + ShopData.currencyName); 
-			
+			if(isShopController(player, shop)) {
+				player.sendMessage(ChatColor.AQUA + "You removed " + ChatColor.WHITE +  amount + " " 
+						+ itemName + ChatColor.AQUA + " from the shop"); 
+			} else {
+				player.sendMessage(ChatColor.AQUA + "You purchased " + ChatColor.WHITE +  amount + " " 
+						+ itemName + ChatColor.AQUA + " for " + ChatColor.WHITE + totalCost + " " + ShopData.currencyName); 
+			}
 			//add number of items to the buyer
 			//Start by searching the inventory for any stacks that match the item we have
 			for(int i: player.getInventory().all(item.getType()).keySet()) {

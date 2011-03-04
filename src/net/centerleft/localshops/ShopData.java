@@ -20,8 +20,8 @@ import cuboidLocale.PrimitiveCuboid;
 public class ShopData {
 	static HashMap<String, Shop> shops;
 	
-	final static long shopSize = 10;
-	final static long shopHeight = 3;
+	static long shopSize = 10;
+	static long shopHeight = 3;
 	static String currencyName = "Coin";
 	
 	static long shopCost = 4000;

@@ -14,6 +14,18 @@ public class PluginProperties {
 			properties.setLong("shop-cost", ShopData.shopCost);
 		}
 		
+		if(properties.keyExists("shop-width")) {
+			ShopData.shopSize = properties.getLong("shop-width");
+		} else {
+			properties.setLong("shop-width", ShopData.shopSize);
+		}
+		
+		if(properties.keyExists("shop-height")) {
+			ShopData.shopHeight = properties.getLong("shop-height");
+		} else {
+			properties.setLong("shop-width", ShopData.shopHeight);
+		}
+		
 	}
 	
 }
