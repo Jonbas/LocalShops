@@ -61,17 +61,19 @@ public class Commands {
 				LocalShops.cuboidTree.insert(tempShopCuboid);
 				ShopData.shops.put(shopName, thisShop );
 				
-				//write the file
-				if( ShopData.saveShop(thisShop) ) { 
-					if(ShopData.chargeForShop) {
-						String[] freeShop = {"freeshop"};
-						if(!canUseCommand(sender, freeShop)) {
-							if(!PlayerData.chargePlayer(player.getName(), ShopData.shopCost)) {
-								player.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "You need " + ShopData.shopCost + " " + ShopData.currencyName + " to create a shop.");
-								return false;
-							}
+				if(ShopData.chargeForShop) {
+					String[] freeShop = {"freeshop"};
+					if(!canUseCommand(sender, freeShop)) {
+						if(!PlayerData.chargePlayer(player.getName(), ShopData.shopCost)) {
+							player.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "You need " + ShopData.shopCost + " " + ShopData.currencyName + " to create a shop.");
+							return false;
 						}
 					}
+				}
+				
+				//write the file
+				if( ShopData.saveShop(thisShop) ) { 
+
 					player.sendMessage( PlayerData.chatPrefix + ChatColor.WHITE + shopName + ChatColor.AQUA + " was created succesfully.");
 					return true;
 				} else {

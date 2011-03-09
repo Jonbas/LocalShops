@@ -30,6 +30,7 @@ Implemented
 Still TODO
 -----------
 
+* Major Bug: Need to check available space in inventory for remove and buy
 * make sure every command has a response to the player
 * Add shop move command
 * be able to set unlimited stock
@@ -39,6 +40,9 @@ Still TODO
 * change buy and sell and remove to use the list of items in the shop, not globally. 
 * check compatibility with iConomy 4.3
 * add user tutorial
+* minimum owner account balance for denying sale
+* CbutD auto update integration?
+* log transactions
 
 Eventual Goal:
 -----------
