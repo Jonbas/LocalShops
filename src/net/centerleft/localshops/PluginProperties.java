@@ -23,7 +23,7 @@ public class PluginProperties {
 		if(properties.keyExists("shop-height")) {
 			ShopData.shopHeight = properties.getLong("shop-height");
 		} else {
-			properties.setLong("shop-width", ShopData.shopHeight);
+			properties.setLong("shop-height", ShopData.shopHeight);
 		}
 		
 	}

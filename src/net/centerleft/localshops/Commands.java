@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.Wool;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -408,7 +409,7 @@ public class Commands {
 	
 
 				if( item.getData() != null) {
-					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
 				} else {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
 				}
@@ -417,6 +418,7 @@ public class Commands {
 				if(args.length == 2) {
 					int totalAmount = 0;
 					for(Integer i : player.getInventory().all(item.getType()).keySet()) {
+						if(player.getInventory().getItem(i).getDurability() != item.getDurability()) continue;
 						totalAmount += player.getInventory().getItem(i).getAmount();
 					}
 					try {
@@ -447,11 +449,12 @@ public class Commands {
 				
 				int totalAmount = 0;
 				for(Integer i : player.getInventory().all(item.getType()).keySet()) {
+					if(player.getInventory().getItem(i).getDurability() != item.getDurability()) continue;
 					totalAmount += player.getInventory().getItem(i).getAmount();
 				}
 				
 				if(item.getData() != null) {
-					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
 				} else {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
 				}
@@ -598,7 +601,8 @@ public class Commands {
 	
 
 				if( item.getData() != null) {
-					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+//TODO this is a workaround for a bukkit bug.  Check to make sure this still works with new versions.
+					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
 				} else {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
 				}
@@ -607,6 +611,7 @@ public class Commands {
 				if(args.length == 2) {
 					int totalAmount = 0;
 					for(Integer i : player.getInventory().all(item.getType()).keySet()) {
+						if(player.getInventory().getItem(i).getDurability() != item.getDurability()) continue;
 						totalAmount += player.getInventory().getItem(i).getAmount();
 					}
 					try {
@@ -637,11 +642,14 @@ public class Commands {
 				
 				int totalAmount = 0;
 				for(Integer i : player.getInventory().all(item.getType()).keySet()) {
+					if(player.getInventory().getItem(i).getDurability() != item.getDurability()) continue;
 					totalAmount += player.getInventory().getItem(i).getAmount();
 				}
 				
 				if(item.getData() != null) {
-					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getData().getData());
+					
+//TODO bukkit glitch work arround for data.  check if this still works later
+					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
 				} else {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
 				}
@@ -683,6 +691,7 @@ public class Commands {
 			for(int i: player.getInventory().all(item.getType()).keySet()) {
 				if( amount == 0 ) continue;
 				ItemStack thisStack = player.getInventory().getItem(i);
+				if( thisStack.getDurability() != item.getDurability()) continue;
 				int foundAmount = thisStack.getAmount();
 				if( amount >= foundAmount ) {
 					amount -= foundAmount;
@@ -767,7 +776,8 @@ public class Commands {
 					return false;
 				} else {
 					int itemData = 0;
-					if( item.getData() != null) itemData = item.getData().getData();
+//TODO bukkit data glitch fix.  Check if it still works
+					if( item.getData() != null) itemData = item.getDurability();
 					itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
 				}
 				
@@ -782,7 +792,7 @@ public class Commands {
 				int totalAmount = shop.getItemStock(itemName);
 
 				try {
-					int numberToRemove = Integer.parseInt(args[2]) * shop.itemBuyAmount(itemName);
+					int numberToRemove = Integer.parseInt(args[2]);
 					if( numberToRemove > totalAmount) {
 						amount = totalAmount - (totalAmount%shop.itemBuyAmount(itemName));
 					} else {
@@ -861,9 +871,11 @@ public class Commands {
 				if( nextEmpty >= 0 && nextEmpty < player.getInventory().getSize()) {
 					if( amount >= 64 ) {
 						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), 64));
+						player.getInventory().getItem(nextEmpty).setDurability(item.getDurability());
 						amount -= 64;
 					} else {
 						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), amount));
+						player.getInventory().getItem(nextEmpty).setDurability(item.getDurability());
 						amount = 0;
 					}
 				} else {
@@ -939,7 +951,7 @@ public class Commands {
 						return false;
 					} else {
 						int itemData = 0;
-						if( item.getData() != null) itemData = item.getData().getData();
+						if( item.getData() != null) itemData = item.getDurability();
 						itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
 					}
 				
@@ -995,7 +1007,7 @@ public class Commands {
 						return false;
 					} else {
 						int itemData = 0;
-						if( item.getData() != null) itemData = item.getData().getData();
+						if( item.getData() != null) itemData = item.getDurability();
 						itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
 					}
 				
@@ -1163,7 +1175,7 @@ public class Commands {
 				return false;
 			} else {
 				int itemData = 0;
-				if( item.getData() != null) itemData = item.getData().getData();
+				if( item.getData() != null) itemData = item.getDurability();
 				itemName = LocalShops.itemList.getItemName(item.getTypeId(), itemData);
 			}
 			
@@ -1203,9 +1215,11 @@ public class Commands {
 				if( nextEmpty >= 0 && nextEmpty < player.getInventory().getSize()) {
 					if( amount >= 64 ) {
 						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), 64));
+						player.getInventory().getItem(nextEmpty).setDurability(item.getDurability());
 						amount -= 64;
 					} else {
 						player.getInventory().setItem(nextEmpty, new ItemStack(item.getType(), amount));
+						player.getInventory().getItem(nextEmpty).setDurability(item.getDurability());
 						amount = 0;
 					}
 				} else {

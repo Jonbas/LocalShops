@@ -32,6 +32,10 @@ Still TODO
 
 * add Help info
 * make sure every command has a responce to the player
+* Add shop move command
+* be able to set unlimited stock
+* add max stock levels
+* add help to /shop set
 
 Eventual Goal:
 -----------

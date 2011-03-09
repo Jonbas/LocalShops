@@ -205,7 +205,9 @@ public class ItemData {
 			item = new ItemStack(info[0], 1);
 			MaterialData data = new MaterialData(info[1]);
 			item.setData(data);
-			
+//TODO this is a work around for bukkit glitch.  Check if this still works.
+			item.setDurability((short)info[1]);
+		
 			return item;
 		}
 		
