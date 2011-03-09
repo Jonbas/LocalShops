@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 import org.bukkit.plugin.Plugin;
@@ -815,7 +816,18 @@ public class Commands {
 			}
 			
 			//check how many items the user has room for
-			//TODO
+			int freeSpots = 0;
+			for(ItemStack thisSlot: player.getInventory().getContents()) {
+				if(thisSlot == null || thisSlot.getType() == Material.AIR) {
+					freeSpots += 64;
+					continue;
+				}
+				if(thisSlot.getTypeId() == item.getTypeId() && thisSlot.getDurability() == item.getDurability()) {
+					freeSpots += 64 - thisSlot.getAmount();
+				}
+			}
+			
+			if(amount > freeSpots) amount = freeSpots;
 			
 			//calculate cost
 			int bundles = amount / shop.itemBuyAmount(itemName);
@@ -1187,6 +1199,32 @@ public class Commands {
 			}
 			
 			int amount = shop.getItemStock(itemName);
+			
+			int freeSpots = 0;
+			for(ItemStack thisSlot: player.getInventory().getContents()) {
+				if(thisSlot == null || thisSlot.getType() == Material.AIR) {
+					freeSpots += 64;
+					continue;
+				}
+				if(thisSlot.getTypeId() == item.getTypeId() && thisSlot.getDurability() == item.getDurability()) {
+					freeSpots += 64 - thisSlot.getAmount();
+				}
+			}
+			
+			player.sendMessage(ChatColor.WHITE + itemName + ChatColor.AQUA + " removed from the shop. " );
+			player.sendMessage("" + ChatColor.WHITE + amount + ChatColor.AQUA + " have been returned to your inventory"); 
+			
+			while(amount > freeSpots) {
+				if((amount - freeSpots) >= 64 ) {
+					item.setAmount(64);
+					amount -= 64;
+				} else {
+					item.setAmount(amount - freeSpots);
+					amount = freeSpots;
+				}
+				player.getWorld().dropItemNaturally(player.getLocation(), item);
+				
+			}
 			shop.removeItem(itemName);
 			
 			player.sendMessage(ChatColor.WHITE + itemName + ChatColor.AQUA + " removed from the shop. " );
