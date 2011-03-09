@@ -30,13 +30,16 @@ Implemented
 Still TODO
 -----------
 
-* add Help info
-* make sure every command has a responce to the player
+* make sure every command has a response to the player
 * Add shop move command
 * be able to set unlimited stock
 * add max stock levels
 * add help to /shop set
+* change shop file to itemID,Data=buy,sell,stock format
+* change buy and sell and remove to use the list of items in the shop, not globally. 
+* check compatibility with iConomy 4.3
+* add user tutorial
 
 Eventual Goal:
 -----------
-* Display shop inventories in chests and purchase through inventory screen
+* Display shop inventories in chests and purchase through inventory screen ++bump
