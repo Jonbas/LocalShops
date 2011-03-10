@@ -40,6 +40,7 @@ Implemented
 Still TODO
 -----------
 
+* selling sponge crashes game with /shop sell command (item not already in shop)
 * make sure every command has a response to the player
 * Add shop move command
 * be able to set unlimited stock
