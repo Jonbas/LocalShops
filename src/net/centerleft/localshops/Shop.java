@@ -58,6 +58,7 @@ public class Shop {
 		private int sellStackSize;
 		private int sellStackPrice;
 		private int stock;
+		public int maxStock;
 		
 		public Item() {
 			itemName = null;
@@ -66,6 +67,7 @@ public class Shop {
 			sellStackSize = 1;
 			sellStackPrice = 0;
 			stock = 0;
+			maxStock = 0;
 		}
 		
 		public Item(String name ) {
@@ -91,6 +93,10 @@ public class Shop {
 		public void setBuy(int buyPrice, int buySize) {
 			buyStackPrice = buyPrice;
 			buyStackSize = buySize;			
+		}
+		
+		public int getMaxStock() {
+			return maxStock;
 		}
 	
 	}
@@ -165,8 +171,8 @@ public class Shop {
 	}
 
 	public void addItem(int itemNumber, int itemData, int buyPrice,
-			int buyStackSize, int sellPrice, int sellStackSize, int stock) {
-		
+			int buyStackSize, int sellPrice, int sellStackSize, int stock, int maxStock) {
+		//TODO add maxStock to item object
 		String itemName = LocalShops.itemList.getItemName(itemNumber, itemData);
 		Item thisItem = new Item( itemName );
 		
@@ -174,6 +180,8 @@ public class Shop {
 		thisItem.setSell( sellPrice, sellStackSize );
 		
 		thisItem.stock = stock;
+		
+		thisItem.maxStock = maxStock;
 		
 		if(shopInventory.containsKey(itemName)) {
 			shopInventory.remove(itemName);
@@ -299,6 +307,14 @@ public class Shop {
 	public long[] getLocation() {
 		
 		return shopLocation.getLocation();
+	}
+
+	public int itemMaxStock(String itemName) {
+		return shopInventory.get(itemName).maxStock;
+	}
+
+	public void setItemMaxStock(String itemName, int maxStock) {
+		shopInventory.get(itemName).maxStock = maxStock;
 	}
 
 }

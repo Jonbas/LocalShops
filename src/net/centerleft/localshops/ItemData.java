@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
@@ -212,6 +213,91 @@ public class ItemData {
 		}
 		
 		return null;
+	}
+
+	public ItemStack getShopItem(CommandSender sender, Shop shop, String arg0) {
+
+		int[] info = null;
+		ItemStack item = null;
+		
+		try {
+			ArrayList<String> list = getItemName(Integer.parseInt(arg0));
+			if(list.size() == 1) {
+				info = getItemInfo( sender, list.get(0));
+			} else {
+				if(sender != null) {
+					if(list.size() > 1) {
+						sender.sendMessage(arg0 + ChatColor.AQUA + " matched multiple items:" );
+						for(String foundName: list) {
+							sender.sendMessage("  " + foundName );
+						}
+					} else {
+						sender.sendMessage(arg0 + ChatColor.AQUA + " did not match any items.");
+					}
+				}
+			}
+			
+
+		} catch (NumberFormatException ex) {
+			info = getShopItemInfo( sender, shop, arg0);
+		}
+		
+		if( info != null) {
+			item = new ItemStack(info[0], 1);
+			MaterialData data = new MaterialData(info[1]);
+			item.setData(data);
+//TODO this is a work around for bukkit glitch.  Check if this still works.
+			item.setDurability((short)info[1]);
+		
+			return item;
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Tries to match item name passed in string based on the inventory of the shop.  
+	 * If sender is passed to function, will return message to sender if no matches 
+	 * are found or print list of matches if multiple are found.
+	 * @param sender
+	 * @param shop
+	 * @param name
+	 * @return Will return null if no matches are found.
+	 */
+	private int[] getShopItemInfo(CommandSender sender, Shop shop, String name) {
+		int index = itemName.indexOf(name);
+		if (index == -1) {
+			Pattern myPattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
+			Matcher myMatcher = myPattern.matcher("tmp");
+			
+			ArrayList<String> foundMatches = new ArrayList<String>();
+			foundMatches.clear();
+			
+			Iterator<String> itr = shop.getItems().iterator();
+			while(itr.hasNext()) {
+				String thisItem = itr.next();
+				myMatcher.reset(thisItem);
+				if(myMatcher.find()) foundMatches.add(thisItem);
+			}
+			
+			if (foundMatches.size() == 1) {
+				index = itemName.indexOf(foundMatches.get(0));
+			} else {
+				if(sender != null) {
+					if(foundMatches.size() > 1) {
+						sender.sendMessage(name + ChatColor.AQUA + " matched multiple items:" );
+						for(String foundName: foundMatches) {
+							sender.sendMessage("  " + foundName );
+						}
+					} else {
+						sender.sendMessage(name + ChatColor.AQUA + " did not match any items.");
+					}
+				}
+				return null;
+			}
+		}
+		int[] data = { itemNumber.get(index), itemData.get(index).dataValue };
+		return data;
 	}
 
 }

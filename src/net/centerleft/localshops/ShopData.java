@@ -48,6 +48,8 @@ public class ShopData {
 		File[] shopsList = shopsDir.listFiles();
 		for( File shop : shopsList ) {
 			
+			
+			
 			if (!shop.isFile()) continue;
 			// read the file and put the data away nicely
 			Shop tempShop = new Shop();
@@ -55,6 +57,12 @@ public class ShopData {
 			String[] split = null;
 		    Scanner scanner;
 		    PrimitiveCuboid tempShopCuboid = null; 
+		    
+			String[] shopName = shop.getName().split("\\.");
+			
+			tempShop.setShopName(shopName[0]);
+			
+			System.out.println("LocalShops: Loading shop " + shopName[0]);
 		    
 		    //set default world just in case we're converting old files
 		    //will be over-written in case the shop files are setup correctly
@@ -69,7 +77,7 @@ public class ShopData {
 				int itemType, itemData;
 				int buyPrice, buyStackSize;
 				int sellPrice, sellStackSize;
-				int stock;
+				int stock, maxStock;
 				
 				while (scanner.hasNextLine()){
 					text = scanner.nextLine();
@@ -78,7 +86,8 @@ public class ShopData {
 					if(!text.startsWith("#") && !text.isEmpty()){
 						split = text.split("=");
 						try {
-							itemType = Integer.parseInt( split[0].trim() );
+							
+							itemType = Integer.parseInt( split[0].split(":")[0].trim() );
 							String[] args = split[1].split(",");
 							//args may be in one of two formats now:
 							//buyPrice:buyStackSize sellPrice:sellStackSize stock
@@ -94,28 +103,61 @@ public class ShopData {
 							}
 							
 							try {
-								itemData = Integer.parseInt(args[0]);
 								
-								String[] buy = args[1].split(";");
-								buyPrice = Integer.parseInt(buy[0]);
-								if(buy.length == 1) {
-									buyStackSize = 1;
+								if(split[0].split(":").length == 1) {
+									itemData = Integer.parseInt(args[0]);
+									
+									String[] buy = args[1].split(";");
+									buyPrice = Integer.parseInt(buy[0]);
+									if(buy.length == 1) {
+										buyStackSize = 1;
+									} else {
+										buyStackSize = Integer.parseInt(buy[1]);
+									}
+									
+									String[] sell = args[2].split(";");
+									sellPrice = Integer.parseInt(sell[0]);
+									if(sell.length == 1) {
+										sellStackSize = 1;
+									} else {
+										sellStackSize = Integer.parseInt(sell[1]);
+									}
+									
+									stock = Integer.parseInt(args[3]);
+									tempShop.addItem( itemType, itemData, buyPrice, buyStackSize, sellPrice, sellStackSize, stock, 0);
 								} else {
-									buyStackSize = Integer.parseInt(buy[1]);
+									itemData = Integer.parseInt(split[0].split(":")[1]);
+									
+									String[] buy = args[1].split(":");
+									buyPrice = Integer.parseInt(buy[0]);
+									if(buy.length == 1) {
+										buyStackSize = 1;
+									} else {
+										buyStackSize = Integer.parseInt(buy[1]);
+									}
+									
+									String[] sell = args[2].split(":");
+									sellPrice = Integer.parseInt(sell[0]);
+									if(sell.length == 1) {
+										sellStackSize = 1;
+									} else {
+										sellStackSize = Integer.parseInt(sell[1]);
+									}
+									
+							
+									String[] stockInfo = args[3].split(":");
+									stock = Integer.parseInt(stockInfo[0]);
+								
+									if(stockInfo.length == 1) {
+										maxStock = 0;
+									} else {
+										maxStock = Integer.parseInt(stockInfo[1]);
+									}
+									
+									tempShop.addItem( itemType, itemData, buyPrice, buyStackSize, sellPrice, sellStackSize, stock, maxStock);
 								}
 								
-								String[] sell = args[2].split(";");
-								sellPrice = Integer.parseInt(sell[0]);
-								if(sell.length == 1) {
-									sellStackSize = 1;
-								} else {
-									sellStackSize = Integer.parseInt(sell[1]);
-								}
-								
-								stock = Integer.parseInt(args[3]);
-								
-								tempShop.addItem( itemType, itemData, buyPrice, buyStackSize, sellPrice, sellStackSize, stock);
-								
+									
 							} catch (NumberFormatException ex3) {
 								System.out.println( LocalShops.pluginName + ": Error - Problem with item data in " + shop.getName() );
 							}
@@ -184,14 +226,15 @@ public class ShopData {
 					}
 				}
 				
-				String[] shopName = shop.getName().split("\\.");
-				
-				tempShop.setShopName(shopName[0]);
+
 				tempShopCuboid.name = tempShop.getShopName();
 				
 				LocalShops.cuboidTree.insert(tempShopCuboid);
 
 				shops.put(shopName[0], tempShop );
+				
+				//convert to new format
+				saveShop(tempShop);
 				
 		    } catch (FileNotFoundException e) {
 				System.out.println( LocalShops.pluginName + ": Error - Could not read file " + shop.getName() );
@@ -239,11 +282,12 @@ public class ShopData {
 				int sellPrice = shop.getItemSellPrice(item);
 				int sellSize = shop.itemSellAmount(item);
 				int stock = shop.getItemStock(item);
+				int maxStock = shop.itemMaxStock(item);
 				int[] itemInfo = LocalShops.itemList.getItemInfo(null, item);
 				if(itemInfo == null) continue;
 				//itemId=dataValue,buyPrice:buyStackSize,sellPrice:sellStackSize,stock
-				fileOutput.add(itemInfo[0] + "=" + itemInfo[1] + "," + buyPrice + ";" + buySize
-						 + "," + sellPrice + ";" + sellSize + "," + stock + "\n");
+				fileOutput.add(itemInfo[0] + ":" + itemInfo[1] + "=" + buyPrice + ":" + buySize
+						 + "," + sellPrice + ":" + sellSize + "," + stock + ":" + maxStock + "\n");
 			}
 			
 			FileOutputStream shopFileOut = new FileOutputStream(filePath);
