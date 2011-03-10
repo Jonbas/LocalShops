@@ -220,7 +220,7 @@ public class Shop {
 
 	public ArrayList<String> getItems() {
 		ArrayList<String> allItemNames = new ArrayList<String>();
-
+		
 		Iterator itr = shopInventory.entrySet().iterator();
 		while(itr.hasNext()) {
 			Map.Entry item = (Map.Entry)itr.next();

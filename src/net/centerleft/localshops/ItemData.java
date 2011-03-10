@@ -3,13 +3,15 @@ package net.centerleft.localshops;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -31,6 +33,11 @@ public class ItemData {
 	public void loadData( File dataFile ) {
 		String line = null;
 		try {
+			try {
+				if(dataFile.createNewFile()) writeItemsFile(dataFile);
+			} catch (IOException e) {
+				System.out.println("LocalShops: File IO error.  Could not create items.txt");
+			}
 			Scanner scanner = new Scanner(new FileInputStream(dataFile));
 			
 			while (scanner.hasNextLine()){
@@ -65,6 +72,32 @@ public class ItemData {
 		
 	}
 	
+	private void writeItemsFile(File dataFile) {
+
+		InputStream is = getClass().getResourceAsStream("items.txt");
+		Scanner fis = new Scanner(is);
+		
+		FileOutputStream os;
+		try {
+			os = new FileOutputStream(dataFile);
+			try {
+				while(fis.hasNext()) {
+					os.write((fis.nextLine() + "\n").getBytes());
+				}
+				
+				os.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		fis.close();
+
+	}
+		
+
 	public void addItem( String name, int blockNumber ) {
 		if(!itemName.contains(name)) {
 			itemName.add(name);
@@ -151,7 +184,7 @@ public class ItemData {
 	}
 	
 	public String getItemName(int itemNumber, int itemData) {
-		for( int i = 0; i <= this.itemNumber.size(); i++ ){
+		for( int i = 0; i < this.itemNumber.size(); i++ ){
 			if( this.itemNumber.get(i) == itemNumber && this.itemData.get(i).dataValue == itemData ) {
 				return this.itemName.get(i);
 			}

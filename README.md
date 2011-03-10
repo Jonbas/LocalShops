@@ -27,15 +27,19 @@ Implemented
 * iConomy 4.0+ integration
 * GroupManager 0.99c integrated
 
-1.8
-*admin overide to everything
-*localshops.admin
-*buy, sell, remove partial name matching is better (based on shop inventory not every available item)
-*added command /shop add itemname
-*added help for /shop set
-*added /shop set max command
-*added max stock level for items
-*changed shop file to itemID,Data=buy,sell,stock format
+**1.8**
+* admin overide to everything
+* localshops.admin
+* buy, sell, remove partial name matching is better (based on shop inventory not every available item)
+* added command /shop add itemname
+* added help for /shop set
+* added /shop set max command
+* added max stock level for items
+* changed shop file to itemID,Data=buy,sell,stock format
+
+**1.9**
+* creates it's own items.txt file from inside the plugin
+* CbutD integration added
 
 Still TODO
 -----------
@@ -46,9 +50,12 @@ Still TODO
 * be able to set unlimited stock
 * add user tutorial
 * minimum owner account balance for denying sale
-* CbutD auto update integration?
 * log transactions
 * add/remove player to shop on create/destroy
+* add messages when the amount of buy/sell changes because of money or space restrictions
+
+* change command to /lshop
+* change /shop set buy|sell
 
 Eventual Goal:
 -----------
