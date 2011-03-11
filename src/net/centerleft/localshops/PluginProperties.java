@@ -26,6 +26,12 @@ public class PluginProperties {
 			properties.setLong("shop-height", ShopData.shopHeight);
 		}
 		
+		if(properties.keyExists("log-transactions")) {
+			ShopData.logTransactions = properties.getBoolean("log-transactions");
+		} else {
+			properties.setBoolean("log-transactions", ShopData.logTransactions);
+		}
+		
 	}
 	
 }

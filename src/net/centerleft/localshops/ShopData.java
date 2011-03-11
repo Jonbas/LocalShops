@@ -26,6 +26,7 @@ public class ShopData {
 	
 	static long shopCost = 4000;
 	static boolean chargeForShop = false;
+	public static boolean logTransactions = true;
 	
 	static void LoadShops( File shopsDir ) {
 		  //initialize and setup the hash of shops
@@ -214,9 +215,25 @@ public class ShopData {
 									
 							} else if(split[0].equalsIgnoreCase("unlimited")) {
 								if(split[1].equalsIgnoreCase("true")) {
-									tempShop.setUnlimited(true);
+									tempShop.setUnlimitedMoney(true);
 								} else {
-									tempShop.setUnlimited(false);
+									tempShop.setUnlimitedMoney(false);
+								}
+								
+								
+							} else if(split[0].equalsIgnoreCase("unlimited-money")) {
+								if(split[1].equalsIgnoreCase("true")) {
+									tempShop.setUnlimitedMoney(true);
+								} else {
+									tempShop.setUnlimitedMoney(false);
+								}
+								
+								
+							} else if(split[0].equalsIgnoreCase("unlimited-stock")) {
+								if(split[1].equalsIgnoreCase("true")) {
+									tempShop.setUnlimitedStock(true);
+								} else {
+									tempShop.setUnlimitedStock(false);
 								}
 								
 								
@@ -228,6 +245,7 @@ public class ShopData {
 				
 
 				tempShopCuboid.name = tempShop.getShopName();
+				tempShopCuboid.world = tempShop.getWorldName();
 				
 				LocalShops.cuboidTree.insert(tempShopCuboid);
 
@@ -262,19 +280,19 @@ public class ShopData {
 			fileOutput.add("world=" + shop.getWorldName() + "\n");
 			fileOutput.add("owner=" + shop.getShopOwner() + "\n");
 			
-			String outString = null;
+			String outString = "";
 			if( shop.getShopManagers() != null ) {
 				for( String manager: shop.getShopManagers()) {
 					outString = outString + manager + ",";
 				} 
-			} else {
-				outString = "";
-			}
+			} 
+			if(outString.equalsIgnoreCase("null")) outString = "";
 			
 			fileOutput.add("managers=" + outString + "\n");
 			fileOutput.add("creator=" + shop.getShopCreator() + "\n");
 			fileOutput.add("position=" + shop.getShopPositionString() + "\n");
-			fileOutput.add("unlimited=" + shop.getValueofUnlimited() + "\n");
+			fileOutput.add("unlimited-money=" + shop.getValueofUnlimitedMoney() + "\n");
+			fileOutput.add("unlimited-stock=" + shop.getValueofUnlimitedStock() + "\n");
 			
 			for(String item: shop.getItems()) {
 				int buyPrice = shop.getItemBuyPrice(item);
@@ -318,6 +336,7 @@ public class ShopData {
 			//for each shop that you find, check to see if we're already in it
 			//this should only find one shop node
 			if( shopLocation.name == null ) continue;
+			if( !shopLocation.world.equalsIgnoreCase(shop.getWorldName())) continue;
 			
 			LocalShops.cuboidTree.delete(shopLocation);
 		}

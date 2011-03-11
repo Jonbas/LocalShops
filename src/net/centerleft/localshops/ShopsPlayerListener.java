@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.PluginManager;
 
 import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
@@ -40,13 +41,38 @@ public class ShopsPlayerListener extends PlayerListener {
 			PlayerData.playerShopList.put(playerName, Collections.synchronizedList(new ArrayList<String>()));	
 		}
 		
-
-		BookmarkedResult res = plugin.playerResult.get(playerName);
 		long x, y, z;
 		Location xyz = event.getTo();
 		x = (long)xyz.getX();
 		y = (long)xyz.getY();
 		z = (long)xyz.getZ();
+		
+		checkPlayerPosition(plugin, player, x, y, z);
+	}
+	
+	public static void checkPlayerPosition(LocalShops instance, Player player) {
+		long x, y, z;
+		Location xyz = player.getLocation();
+		x = (long)xyz.getX();
+		y = (long)xyz.getY();
+		z = (long)xyz.getZ();
+		
+		checkPlayerPosition(instance, player, x, y, z);
+	}
+	
+	public static void checkPlayerPosition(LocalShops instance, Player player, long[] xyz) {
+		if(xyz.length > 3) {
+			checkPlayerPosition(instance, player, xyz[0], xyz[1], xyz[2]);
+		} else {
+			System.out.println("LocalShops: Bad position");
+		}
+		
+	}
+
+	public static void checkPlayerPosition(LocalShops instance, Player player, long x, long y, long z) {
+		LocalShops plugin = instance;
+		String playerName = player.getName();
+		BookmarkedResult res = plugin.playerResult.get(playerName);
 		
 		synchronized(plugin.playerResult) {
 			res = LocalShops.cuboidTree.relatedSearch(res.bookmark, x, y, z);
@@ -59,6 +85,7 @@ public class ShopsPlayerListener extends PlayerListener {
 					//for each shop that you find, check to see if we're already in it
 					
 					if( shop.name == null ) continue;
+					if( !shop.world.equalsIgnoreCase(player.getWorld().getName())) continue;
 					
 							
 					if(!PlayerData.playerIsInShop(player, shop.name)) {
@@ -94,16 +121,18 @@ public class ShopsPlayerListener extends PlayerListener {
 		
 	}
 
-	private void notifyPlayerLeftShop(Player player, String shopName) {
+	private static void notifyPlayerLeftShop(Player player, String shopName) {
 		// TODO Add formatting
 		player.sendMessage( ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA 
 				+ "] You have left the shop " + ChatColor.WHITE + shopName);
 	}
 
-	private void notifyPlayerEnterShop(Player player, String shopName) {
+	private static void notifyPlayerEnterShop(Player player, String shopName) {
 		// TODO Add formatting
 		player.sendMessage( ChatColor.AQUA +"[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA 
 				+ "] You have entered the shop " + ChatColor.WHITE + shopName);
 		
 	}
+
+
 }

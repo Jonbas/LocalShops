@@ -14,6 +14,7 @@ public class Shop {
 	private String shopOwner;
 	private String shopCreator;
 	private String[] shopManagers;
+	private boolean unlimitedMoney;
 	private boolean unlimitedStock;
 	
 	private HashMap<String, Item> shopInventory;
@@ -155,7 +156,12 @@ public class Shop {
 	}
 
 	public void setShopManagers(String[] names) {
-		if(names != null) shopManagers = names.clone();
+		if(names != null) { 
+			shopManagers = names.clone();
+		} else {
+			shopManagers = null;
+		}
+		
 	}
 
 	public void setLocation(long[] position) {
@@ -166,8 +172,12 @@ public class Shop {
 		shopLocation.setLocation(x, y, z);
 	}
 
-	public void setUnlimited(boolean b) {
+	public void setUnlimitedStock(boolean b) {
 		unlimitedStock = b;
+	}
+	
+	public void setUnlimitedMoney(boolean b) {
+		unlimitedMoney = b;
 	}
 
 	public void addItem(int itemNumber, int itemData, int buyPrice,
@@ -211,8 +221,15 @@ public class Shop {
 		return shopManagers;
 	}
 
-	public String getValueofUnlimited() {
+	public String getValueofUnlimitedStock() {
 		if(this.unlimitedStock) {
+			return "true";
+		} 
+		return "false";
+	}
+	
+	public String getValueofUnlimitedMoney() {
+		if(this.unlimitedMoney) {
 			return "true";
 		} 
 		return "false";
@@ -254,8 +271,12 @@ public class Shop {
 		return shopInventory.get(itemName).stock;
 	}
 
-	public boolean isUnlimited() {
+	public boolean isUnlimitedStock() {
 		return unlimitedStock;
+	}
+	
+	public boolean isUnlimitedMoney() {
+		return unlimitedMoney;
 	}
 
 	public boolean addStock(String itemName, int amount) {

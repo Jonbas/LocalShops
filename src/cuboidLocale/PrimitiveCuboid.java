@@ -1,7 +1,10 @@
 package cuboidLocale;
 
+import org.bukkit.World;
+
 public class PrimitiveCuboid{
   public String name = null;
+  public String world = null;
   public long[] xyzA = {0,0,0};
   public long[] xyzB = {0,0,0};
   long lowIndex[] = new long[3];

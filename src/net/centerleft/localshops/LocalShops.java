@@ -58,6 +58,7 @@ public class LocalShops extends JavaPlugin {
 		
 		playerResult = Collections.synchronizedMap(new HashMap<String, BookmarkedResult>());
 		
+		// add all the online users to the data trees
 		for( Player player : this.getServer().getOnlinePlayers() ) {
 			if( !this.playerResult.containsKey(player.getName())) {
 				this.playerResult.put(player.getName(), new BookmarkedResult());
@@ -73,32 +74,34 @@ public class LocalShops extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLUGIN_ENABLE, pluginListener, Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLUGIN_DISABLE, pluginListener, Priority.Monitor, this);
 		
+		//check hook for permissions
 		Plugin p = pm.getPlugin("Permissions");
 		if (p != null) {
-            if (!p.isEnabled()) {
-                pm.enablePlugin(p);
+            if (p.isEnabled()) {
+                Permissions gm = (Permissions) p;
+                ShopsPluginListener.permissions = gm;
+                ShopsPluginListener.gmPermissionCheck = gm.getHandler();
+                System.out.println("LocalShops: Permissions found.");
+                ShopsPluginListener.usePermissions = true;
+            } else {
+            	ShopsPluginListener.usePermissions = false;
             }
-            Permissions gm = (Permissions) p;
-            ShopsPluginListener.permissions = gm;
-            ShopsPluginListener.gmPermissionCheck = gm.getHandler();
-            System.out.println("LocalShops: Permissions found.");
-            ShopsPluginListener.usePermissions = true;
-          
         } else {
         	System.out.println("LocalShops: Permissions not found.");
         	ShopsPluginListener.usePermissions = false;
         }
 		
+		//check hook for iConomy
 		Plugin ic = pm.getPlugin("iConomy");
 		if (ic != null) {
-            if (!ic.isEnabled()) {
-                pm.enablePlugin(ic);
+            if (ic.isEnabled()) {
+                iConomy icon = (iConomy) ic;
+                ShopsPluginListener.iConomy = icon;
+                System.out.println("LocalShops: iConomy found.");
+                ShopsPluginListener.useiConomy = true;
+            } else {
+            	ShopsPluginListener.useiConomy = false;
             }
-            iConomy icon = (iConomy) ic;
-            ShopsPluginListener.iConomy = icon;
-            System.out.println("LocalShops: iConomy found.");
-            ShopsPluginListener.useiConomy = true;
-          
         } else {
         	System.out.println("LocalShops: iConomy not found.");
         	ShopsPluginListener.useiConomy = false;
@@ -132,7 +135,10 @@ public class LocalShops extends JavaPlugin {
 		System.out.println( pluginName + ": Loaded " + ShopData.shops.size() + " shop(s).");
 		System.out.println( pluginName + ": version " + pluginVersion + " is enabled!");
 		
-		
+		// check which shops players are inside
+		for( Player player : this.getServer().getOnlinePlayers() ) {
+			ShopsPlayerListener.checkPlayerPosition(this, player);
+		}
 	}
 
 	public void onDisable() {
@@ -151,8 +157,14 @@ public class LocalShops extends JavaPlugin {
 			if(args.length >= 1) {
 				if(args[0].equalsIgnoreCase("create")) {
 					Commands.createShop(sender, trimmedArgs);
+					for(Player player: this.getServer().getOnlinePlayers()) {
+						ShopsPlayerListener.checkPlayerPosition(this, player);
+					}
 				} else if(args[0].equalsIgnoreCase("destroy")) {
 					Commands.destroyShop(sender, trimmedArgs);
+					for(Player player: this.getServer().getOnlinePlayers()) {
+						ShopsPlayerListener.checkPlayerPosition(this, player);
+					}
 				} else if(args[0].equalsIgnoreCase("list")) {
 					Commands.listShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("reload")) {
