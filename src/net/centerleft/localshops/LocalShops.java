@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -35,7 +36,7 @@ public class LocalShops extends JavaPlugin {
 	private final ShopsPlayerListener playerListener = new ShopsPlayerListener(this);
 	private final ShopsPluginListener pluginListener = new ShopsPluginListener(this);
 	
-	static String pluginName;
+	static String pluginName = "LocalShops";
 	static String pluginVersion;
 	
 	static QuadTree cuboidTree = new QuadTree();
@@ -156,10 +157,16 @@ public class LocalShops extends JavaPlugin {
 					Commands.listShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("reload")) {
 					if(Commands.canUseCommand(sender, trimmedArgs)) {
+						
+						//TODO fix this null pointer exception from ourPlugin
 						PluginManager pm = sender.getServer().getPluginManager();
 						Plugin ourPlugin = pm.getPlugin(pluginName);
 						pm.disablePlugin(ourPlugin);
 						pm.enablePlugin(ourPlugin);
+						
+						sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "The plugin has been reloaded." );
+						
+						
 					}
 				} else if(args[0].equalsIgnoreCase("sell")) {
 					Commands.sellItemShop(sender, trimmedArgs);

@@ -428,6 +428,14 @@ public class Commands {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
 				}
 				
+				//check if the shop is buying that item
+				if(!shop.getItems().contains(itemName) || shop.getItemSellPrice(itemName) == 0) {
+					player.sendMessage(ChatColor.AQUA + "Sorry, " + ChatColor.WHITE + shopName 
+							+ ChatColor.AQUA + " is not buying " + ChatColor.WHITE + itemName 
+							+ ChatColor.AQUA + " right now." );
+					return false;
+				}
+				
 				amount = item.getAmount() - (item.getAmount()%shop.itemSellAmount(itemName));
 				if(args.length == 2) {
 					int totalAmount = 0;
@@ -836,7 +844,15 @@ public class Commands {
 				}
 				
 				//check if the shop is selling that item
-				if(!shop.getItems().contains(itemName) || shop.getItemBuyPrice(itemName) == 0) {
+				if(!shop.getItems().contains(itemName)) {
+					player.sendMessage(ChatColor.AQUA + "Sorry, " + ChatColor.WHITE + shopName 
+							+ ChatColor.AQUA + " is not selling " + ChatColor.WHITE + itemName 
+							+ ChatColor.AQUA + " right now." );
+					return false;
+				}
+				
+				//check if the item has a price, or if this is a shop owner
+				if(shop.getItemBuyPrice(itemName) == 0 && !isShopController(player, shop)) {
 					player.sendMessage(ChatColor.AQUA + "Sorry, " + ChatColor.WHITE + shopName 
 							+ ChatColor.AQUA + " is not selling " + ChatColor.WHITE + itemName 
 							+ ChatColor.AQUA + " right now." );
@@ -989,7 +1005,7 @@ public class Commands {
 			String shopName = PlayerData.playerShopsList(playerName).get(0);
 			Shop shop = ShopData.shops.get(shopName);
 			
-			if(!isShopController(player, shop))  {
+			if(!isShopController(player, shop) && !canUseCommand(player, "admin".split("")))  {
 				player.sendMessage(ChatColor.AQUA + "You must be the shop owner or a manager to set this.");
 				player.sendMessage(ChatColor.AQUA + "The current shop owner is " + ChatColor.WHITE + shop.getShopOwner());
 				return false;
@@ -1165,7 +1181,7 @@ public class Commands {
 				
 			} else if ( args[1].equalsIgnoreCase("manager")) {
 				String[] managers = shop.getShopManagers();
-				if(!shop.getShopOwner().equalsIgnoreCase(player.getName())) {
+				if(!shop.getShopOwner().equalsIgnoreCase(player.getName()) && !canUseCommand(player, "admin".split(""))) {
 					player.sendMessage(ChatColor.AQUA + "You must be the shop owner to set this.");
 					player.sendMessage(ChatColor.AQUA + "The current shop owner is " + ChatColor.WHITE + shop.getShopOwner());
 					return false;
@@ -1218,7 +1234,7 @@ public class Commands {
 				
 			} else if ( args[1].equalsIgnoreCase("owner")) {
 				if(args.length == 3) {
-				if(!shop.getShopOwner().equalsIgnoreCase(player.getName()) && !canUseCommand(player, "admin".split(":"))) {
+				if(!shop.getShopOwner().equalsIgnoreCase(player.getName()) && !canUseCommand(player, "admin".split(""))) {
 					player.sendMessage(ChatColor.AQUA + "You must be the shop owner to set this.");
 					player.sendMessage(ChatColor.AQUA + "The current shop owner is " + ChatColor.WHITE + shop.getShopOwner());
 					return false;
@@ -1272,7 +1288,7 @@ public class Commands {
 			String shopName = PlayerData.playerShopsList(playerName).get(0);
 			Shop shop = ShopData.shops.get(shopName);
 			
-			if(!isShopController(player, shop))  {
+			if(!isShopController(player, shop) && !canUseCommand(player, "admin".split("")))  {
 				player.sendMessage(ChatColor.AQUA + "You must be the shop owner or a manager to remove an item.");
 				player.sendMessage(ChatColor.AQUA + "The current shop owner is " + ChatColor.WHITE + shop.getShopOwner());
 				return false;
