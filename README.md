@@ -53,6 +53,9 @@ Implemented
 * fixed problem with Permissions startup
 * fixed problem with /shop sell command NPE fix
 
+** 1.12 **
+* fixed problem with stone slabs
+
 Still TODO
 -----------
 
