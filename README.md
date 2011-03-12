@@ -4,6 +4,21 @@ Local Shops
 A cuboid shop plugin for Bukkit
 http://www.github.com/Bukkit
 
+Still TODO
+-----------
+
+* make sure every command has a response to the player
+* Add shop move command
+* minimum owner account balance for denying sale
+* log transactions
+
+* change command to /lshop
+* change /shop set buy|sell
+
+Eventual Goal:
+-----------
+* Display shop inventories in chests and purchase through inventory screen ++bump
+
 Implemented
 -----------
 
@@ -42,6 +57,7 @@ Implemented
 * gave shop owner or managers to buy or sell if price is 0
 
 **1.10**  
+
 * fixed adding and deleting shops conflicting worlds
 * added check for shop entry on log in, reload, and create/destroy
 * create shop overlap with other world problem
@@ -50,23 +66,11 @@ Implemented
 * added /shop list info
 
 ** 1.11 **  
+
 * fixed problem with Permissions startup
 * fixed problem with /shop sell command NPE fix
 
-** 1.12 **
+** 1.12 **  
+
 * fixed problem with stone slabs
 
-Still TODO
------------
-
-* make sure every command has a response to the player
-* Add shop move command
-* minimum owner account balance for denying sale
-* log transactions
-
-* change command to /lshop
-* change /shop set buy|sell
-
-Eventual Goal:
------------
-* Display shop inventories in chests and purchase through inventory screen ++bump
