@@ -478,11 +478,17 @@ public class Commands {
 
 				if( item.getData() != null) {
 					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
-				} else {
-					sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be sold to the shop.");
-					System.out.println("LocalShops: " + player.getName() + " tried to sell " + item.getType().toString() + " but it's not in the item list." );
-					return false;
+				}  else {
+					ArrayList<String> returnedNames = LocalShops.itemList.getItemName(item.getType().getId());
+					if(returnedNames.size() == 0) {
+						sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be sold to the shop.");
+						System.out.println("LocalShops: " + player.getName() + " tried to sell " + item.getType().toString() + " but it's not in the item list." );
+						return false;
+					} else { 
+						itemName = returnedNames.get(0);
+					}
 				}
+				
 				
 				//check if the shop is buying that item
 				if(!shop.getItems().contains(itemName) || shop.getItemSellPrice(itemName) == 0) {
@@ -702,7 +708,14 @@ public class Commands {
 		//TODO bukkit glitch work arround for data.  check if this still works later
 							itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
 						} else {
-							itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
+							ArrayList<String> nameList = LocalShops.itemList.getItemName(item.getType().getId());
+							if(nameList.size() > 0) {
+								itemName = nameList.get(0);
+							} else {
+								sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be added to the shop.");
+								System.out.println("LocalShops: " + player.getName() + " tried to add " + item.getType().toString() + " but it's not in the item list." );
+								return false;
+							}
 						}
 					}
 				}
@@ -778,7 +791,14 @@ public class Commands {
 //TODO bukkit glitch work arround for data.  check if this still works later
 					itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
 				} else {
-					itemName = LocalShops.itemList.getItemName(item.getType().getId()).get(0);
+					ArrayList<String> nameList = LocalShops.itemList.getItemName(item.getType().getId());
+					if(nameList.size() > 0) {
+						itemName = nameList.get(0);
+					} else {
+						sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be added to the shop.");
+						System.out.println("LocalShops: " + player.getName() + " tried to add " + item.getType().toString() + " but it's not in the item list." );
+						return false;
+					}
 				}
 				
 				try {
