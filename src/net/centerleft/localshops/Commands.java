@@ -381,7 +381,7 @@ public class Commands {
 			//get stock
 			int stock = shop.getItemStock(item);
 			if(buy) {
-				if(stock == 0) continue;
+				if(stock == 0 && !shop.isUnlimitedStock()) continue;
 			}
 			if(!shop.isUnlimitedStock()) {
 				subMessage += ChatColor.AQUA + " [" + ChatColor.WHITE + "Stock: " + stock + ChatColor.AQUA + "]";
@@ -1280,11 +1280,13 @@ public class Commands {
 					partial = "";
 					part = newName.split("\\-");
 					if(part.length == 2) {
-						for(String name: managers) {
-							if(name.equalsIgnoreCase(part[1])) continue;
-							partial += name + ",";
+						if(managers != null) {
+							for(String name: managers) {
+								if(name.equalsIgnoreCase(part[1])) continue;
+								partial += name + ",";
+							}
+							managers = partial.split(",");
 						}
-						managers = partial.split(",");
 					}
 					
 				}
