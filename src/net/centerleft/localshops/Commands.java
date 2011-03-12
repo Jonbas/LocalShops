@@ -602,6 +602,7 @@ public class Commands {
 						int bundlesCanAford = (int)shopBalance / itemPrice;
 						totalCost = bundlesCanAford * itemPrice;
 						amount = bundlesCanAford * shop.itemSellAmount(itemName);
+						player.sendMessage(ChatColor.AQUA + "The shop could only afford " + ChatColor.WHITE + amount);
 						if(!PlayerData.payPlayer(shop.getShopOwner(), playerName, totalCost)) {
 							player.sendMessage(ChatColor.AQUA + "Unexpected money problem: could not complete sale.");
 							return false;
@@ -920,7 +921,7 @@ public class Commands {
 			if(args.length == 3) {
 				item = LocalShops.itemList.getShopItem(player, shop, args[1]);
 				if(item == null) {
-					player.sendMessage(ChatColor.AQUA + "Could not complete the purchase.");
+					player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Could not complete the purchase.");
 					return false;
 				} else {
 					int itemData = 0;
@@ -947,6 +948,11 @@ public class Commands {
 				
 				int totalAmount;
 				totalAmount = shop.getItemStock(itemName);
+				
+				if(totalAmount == 0 && !shop.isUnlimitedStock()) {
+					player.sendMessage(ChatColor.AQUA + "The shop has " + ChatColor.WHITE + totalAmount + " " + itemName);
+					return true;
+				}
 					
 				try {
 					int numberToRemove = Integer.parseInt(args[2]);
@@ -955,8 +961,16 @@ public class Commands {
 					}
 					if( numberToRemove > totalAmount) {
 						amount = totalAmount - (totalAmount%shop.itemBuyAmount(itemName));
+						if(!shop.isUnlimitedStock()) {
+							player.sendMessage(ChatColor.AQUA + "The shop has " + ChatColor.WHITE + totalAmount + " " + itemName);
+						}
 					} else {
 						amount = numberToRemove - (numberToRemove%shop.itemBuyAmount(itemName));
+					}
+					
+					if(shop.itemBuyAmount(itemName) > 1) {
+						player.sendMessage(ChatColor.AQUA + "Purchase amount change to " + ChatColor.WHITE + amount 
+								+ ChatColor.AQUA + " to fit bundle size of " + ChatColor.WHITE + shop.itemBuyAmount(itemName));
 					}
 				} catch (NumberFormatException ex2 ) {
 					if( args[2].equalsIgnoreCase("all")) {
@@ -1002,8 +1016,10 @@ public class Commands {
 					int bundlesCanAford = (int)Math.floor(playerBalance / itemPrice);
 					totalCost = bundlesCanAford * itemPrice;
 					amount = bundlesCanAford * shop.itemSellAmount(itemName);
+					player.sendMessage(ChatColor.AQUA + "You could only afford " + ChatColor.WHITE + amount);
+					
 					if(!PlayerData.payPlayer( playerName, shop.getShopOwner(), totalCost)) {
-						player.sendMessage(ChatColor.AQUA + "Unexpected money problem: could not complete sale.");
+						player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Unexpected money problem: could not complete sale.");
 						return false;
 					}
 				}

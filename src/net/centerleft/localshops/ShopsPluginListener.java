@@ -31,6 +31,7 @@ public class ShopsPluginListener extends ServerListener {
         
         if(event.getPlugin().getDescription().getName().equals("Permissions")) {
         	permissions = (Permissions)event.getPlugin();
+            gmPermissionCheck = permissions.getHandler();
         	System.out.print("LocalShops: Attached to Permissions");
         	usePermissions = true;
             

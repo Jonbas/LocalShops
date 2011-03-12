@@ -49,6 +49,10 @@ Implemented
 * added /shop set unlimited money|stock
 * added /shop list info
 
+** 1.11 **
+* fixed problem with Permissions startup
+* fixed problem with /shop sell command NPE fix
+
 Still TODO
 -----------
 
