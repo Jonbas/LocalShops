@@ -41,7 +41,7 @@ Implemented
 * fixed localshops.admin
 * gave shop owner or managers to buy or sell if price is 0
 
-**1.10**
+**1.10**  
 * fixed adding and deleting shops conflicting worlds
 * added check for shop entry on log in, reload, and create/destroy
 * create shop overlap with other world problem
@@ -49,7 +49,7 @@ Implemented
 * added /shop set unlimited money|stock
 * added /shop list info
 
-** 1.11 **
+** 1.11 **  
 * fixed problem with Permissions startup
 * fixed problem with /shop sell command NPE fix
 
@@ -63,7 +63,6 @@ Still TODO
 * Add shop move command
 * minimum owner account balance for denying sale
 * log transactions
-* add messages when the amount of buy/sell changes because of money or space restrictions
 
 * change command to /lshop
 * change /shop set buy|sell
