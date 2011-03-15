@@ -12,7 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
@@ -79,6 +81,8 @@ public class ShopData {
 				int buyPrice, buyStackSize;
 				int sellPrice, sellStackSize;
 				int stock, maxStock;
+				long[] xyzA = new long[3];
+				long[] xyzB = new long[3];
 				
 				while (scanner.hasNextLine()){
 					text = scanner.nextLine();
@@ -181,8 +185,8 @@ public class ShopData {
 							} else if(split[0].equalsIgnoreCase("position")) {
 								String[] args = split[1].split(",");
 								
-								long[] xyzA = new long[3];
-								long[] xyzB = new long[3];
+								xyzA = new long[3];
+								xyzB = new long[3];
 								long lx = 0;
 								long ly = 0;
 								long lz = 0;
@@ -192,14 +196,21 @@ public class ShopData {
 									ly = Long.parseLong(args[1].trim());
 									lz = Long.parseLong(args[2].trim());
 									
-									xyzA[0] = lx - (shopSize / 2);
-									xyzB[0] = lx + (shopSize / 2);
-									xyzA[2] = lz - (shopSize / 2);
-									xyzB[2] = lz + (shopSize / 2);
+									if( shopSize % 2 == 1) {
+										xyzA[0] = lx - (shopSize / 2);
+										xyzB[0] = lx + (shopSize / 2);
+										xyzA[2] = lz - (shopSize / 2);
+										xyzB[2] = lz + (shopSize / 2);
+									} else {
+										xyzA[0] = lx - (shopSize / 2) + 1;
+										xyzB[0] = lx + (shopSize / 2);
+										xyzA[2] = lz - (shopSize / 2) + 1;
+										xyzB[2] = lz + (shopSize / 2);
+									}
 									
 									xyzA[1] = ly - 1;
 									xyzB[1] = ly + shopHeight - 1;
-
+									
 									tempShopCuboid = new PrimitiveCuboid( xyzA, xyzB );
 								
 									
@@ -247,12 +258,14 @@ public class ShopData {
 				tempShopCuboid.name = tempShop.getShopName();
 				tempShopCuboid.world = tempShop.getWorldName();
 				
-				LocalShops.cuboidTree.insert(tempShopCuboid);
-
-				shops.put(shopName[0], tempShop );
+				if( shopPositionOk(tempShop, xyzA, xyzB )) {
 				
-				//convert to new format
-				saveShop(tempShop);
+					LocalShops.cuboidTree.insert(tempShopCuboid);
+					shops.put(shopName[0], tempShop );
+					
+					//convert to new format
+					saveShop(tempShop);
+				}
 				
 		    } catch (FileNotFoundException e) {
 				System.out.println( LocalShops.pluginName + ": Error - Could not read file " + shop.getName() );
@@ -351,5 +364,36 @@ public class ShopData {
 		shops.remove(name);
 			
 		return true;
+	}
+	
+	private static boolean shopPositionOk( Shop shop, long[] xyzA, long[] xyzB ) {
+		BookmarkedResult res = new BookmarkedResult();
+		
+		//Need to test every position to account for variable shop sizes
+		
+		for( long x = xyzA[0]; x <= xyzB[0]; x++) {
+			for( long z = xyzA[2]; x <= xyzB[2]; z++) {
+				for( long y = xyzA[1]; x <= xyzB[1]; y++) {
+					res = LocalShops.cuboidTree.relatedSearch(res.bookmark, x, y, z );
+					if( shopOverlaps(shop, res) ) return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	private static boolean shopOverlaps( Shop shop, BookmarkedResult res ) {
+		if( res.results.size() != 0 ) {
+			for( PrimitiveCuboid foundShop : res.results) {
+				if(foundShop.name != null) {
+					if(foundShop.world.equalsIgnoreCase(shop.getWorldName())) {
+					System.out.println(PlayerData.chatPrefix + ChatColor.AQUA + "Could not create shop, it overlaps with " + ChatColor.WHITE 
+							+ foundShop.name );
+					return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
