@@ -332,6 +332,53 @@ public class ItemData {
 		int[] data = { itemNumber.get(index), itemData.get(index).dataValue };
 		return data;
 	}
-
+	
+	public boolean isDurable( ItemStack item ) {
+		Material itemType = item.getType();
+		if( itemType == Material.CHAINMAIL_BOOTS ||
+				itemType == Material.CHAINMAIL_CHESTPLATE ||
+				itemType == Material.CHAINMAIL_HELMET ||
+				itemType == Material.CHAINMAIL_LEGGINGS ||
+				itemType == Material.WOOD_AXE ||
+				itemType == Material.WOOD_HOE ||
+				itemType == Material.WOOD_PICKAXE ||
+				itemType == Material.WOOD_SPADE ||
+				itemType == Material.WOOD_SWORD ||
+				itemType == Material.STONE_AXE ||
+				itemType == Material.STONE_HOE ||
+				itemType == Material.STONE_PICKAXE ||
+				itemType == Material.STONE_SPADE ||
+				itemType == Material.STONE_SWORD ||
+				itemType == Material.IRON_AXE ||
+				itemType == Material.IRON_BOOTS ||
+				itemType == Material.IRON_CHESTPLATE ||
+				itemType == Material.IRON_HELMET ||
+				itemType == Material.IRON_HOE ||
+				itemType == Material.IRON_LEGGINGS ||
+				itemType == Material.IRON_PICKAXE ||
+				itemType == Material.IRON_SPADE ||
+				itemType == Material.IRON_SWORD ||
+				itemType == Material.GOLD_AXE ||
+				itemType == Material.GOLD_BOOTS ||
+				itemType == Material.GOLD_CHESTPLATE ||
+				itemType == Material.GOLD_HELMET ||
+				itemType == Material.GOLD_HOE ||
+				itemType == Material.GOLD_LEGGINGS ||
+				itemType == Material.GOLD_PICKAXE ||
+				itemType == Material.GOLD_SPADE ||
+				itemType == Material.GOLD_SWORD ||
+				itemType == Material.DIAMOND_AXE ||
+				itemType == Material.DIAMOND_BOOTS ||
+				itemType == Material.DIAMOND_CHESTPLATE ||
+				itemType == Material.DIAMOND_HELMET ||
+				itemType == Material.DIAMOND_HOE ||
+				itemType == Material.DIAMOND_LEGGINGS ||
+				itemType == Material.DIAMOND_PICKAXE ||
+				itemType == Material.DIAMOND_SPADE ||
+				itemType == Material.DIAMOND_SWORD ) {
+			return true;
+		}
+		return false;
+	}
 }
 

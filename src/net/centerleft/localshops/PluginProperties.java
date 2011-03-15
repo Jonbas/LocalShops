@@ -32,6 +32,11 @@ public class PluginProperties {
 			properties.setBoolean("log-transactions", ShopData.logTransactions);
 		}
 		
+		if(properties.keyExists("min-durability")) {
+			ShopData.minDurability = properties.getInt("min-durability");
+		} else {
+			properties.setInt("min-durability", ShopData.minDurability);
+		}
 	}
 	
 }

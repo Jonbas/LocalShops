@@ -29,6 +29,8 @@ public class ShopData {
 	static long shopCost = 4000;
 	static boolean chargeForShop = false;
 	public static boolean logTransactions = true;
+
+	public static int minDurability = 10;
 	
 	static void LoadShops( File shopsDir ) {
 		  //initialize and setup the hash of shops

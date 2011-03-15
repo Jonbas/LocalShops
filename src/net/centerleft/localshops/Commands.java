@@ -476,6 +476,17 @@ public class Commands {
 	
 				//TODO
 				itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
+				if(LocalShops.itemList.isDurable(item)) {
+					ArrayList<String> items = LocalShops.itemList.getItemName(item.getType().getId());
+					if(items.size() > 0) {
+						itemName = items.get(0);
+					}
+					if( itemName != null && item.getDurability() < ShopData.minDurability) {
+						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
+								+ ChatColor.AQUA + " is too damaged to sell.");
+						return false;
+					}
+				}
 				if(itemName == null) {
 					sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be added to the shop.");
 					System.out.println("LocalShops: " + player.getName() + " tried to add " + item.getType().toString() + " but it's not in the item list." );
@@ -700,6 +711,17 @@ public class Commands {
 						
 						//TODO
 						itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
+						if(LocalShops.itemList.isDurable(item)) {
+							ArrayList<String> items = LocalShops.itemList.getItemName(item.getType().getId());
+							if(items.size() > 0) {
+								itemName = items.get(0);
+							}
+							if( itemName != null && item.getDurability() < ShopData.minDurability) {
+								player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
+										+ ChatColor.AQUA + " is too damaged to sell.");
+								return false;
+							}
+						}
 						if(itemName == null) {
 							sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be added to the shop.");
 							System.out.println("LocalShops: " + player.getName() + " tried to add " + item.getType().toString() + " but it's not in the item list." );
@@ -722,6 +744,17 @@ public class Commands {
 
 				//TODO
 				itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
+				if(LocalShops.itemList.isDurable(item)) {
+					ArrayList<String> items = LocalShops.itemList.getItemName(item.getType().getId());
+					if(items.size() > 0) {
+						itemName = items.get(0);
+					}
+					if( itemName != null && item.getDurability() < ShopData.minDurability) {
+						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
+								+ ChatColor.AQUA + " is too damaged to sell.");
+						return false;
+					}
+				}
 				if(itemName == null) {
 					sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be added to the shop.");
 					System.out.println("LocalShops: " + player.getName() + " tried to add " + item.getType().toString() + " but it's not in the item list." );
@@ -769,6 +802,17 @@ public class Commands {
 				
 				//TODO
 				itemName = LocalShops.itemList.getItemName(item.getType().getId(), (int)item.getDurability());
+				if(LocalShops.itemList.isDurable(item)) {
+					ArrayList<String> items = LocalShops.itemList.getItemName(item.getType().getId());
+					if(items.size() > 0) {
+						itemName = items.get(0);
+					}
+					if( itemName != null && item.getDurability() < ShopData.minDurability) {
+						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
+								+ ChatColor.AQUA + " is too damaged to sell.");
+						return false;
+					}
+				}
 				if(itemName == null) {
 					sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be added to the shop.");
 					System.out.println("LocalShops: " + player.getName() + " tried to add " + item.getType().toString() + " but it's not in the item list." );
