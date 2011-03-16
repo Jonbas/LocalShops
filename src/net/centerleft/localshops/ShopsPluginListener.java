@@ -27,6 +27,7 @@ public class ShopsPluginListener extends ServerListener {
             iConomy = (iConomy)event.getPlugin();
             System.out.println("LocalShops: Attached to iConomy.");
             useiConomy = true;
+    		ShopData.currencyName = iConomy.getBank().getCurrency();
         }
         
         if(event.getPlugin().getDescription().getName().equals("Permissions")) {

@@ -1,5 +1,7 @@
 package net.centerleft.localshops;
 
+import org.bukkit.Material;
+
 public class PluginProperties {
 	public static void loadProperties(PropertyHandler properties) {
 		if(properties.keyExists("charge-for-shop")) {
