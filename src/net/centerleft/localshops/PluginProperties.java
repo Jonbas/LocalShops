@@ -32,14 +32,11 @@ public class PluginProperties {
 			properties.setBoolean("log-transactions", ShopData.logTransactions);
 		}
 		
-		if(properties.keyExists("min-durability")) {
-			ShopData.minDurability = properties.getInt("min-durability");
-			if(ShopData.minDurability > 15) {
-				ShopData.minDurability = 15;
-				properties.setInt("min-durability", ShopData.minDurability);
-			}
+		if(properties.keyExists("max-damage")) {
+			ShopData.maxDamage = properties.getInt("max-damage");
+			if(ShopData.maxDamage < 0) ShopData.maxDamage = 0;
 		} else {
-			properties.setInt("min-durability", ShopData.minDurability);
+			properties.setInt("max-damage", ShopData.maxDamage);
 		}
 	}
 	

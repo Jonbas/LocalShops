@@ -31,7 +31,7 @@ public class ShopData {
 	static boolean chargeForShop = false;
 	public static boolean logTransactions = true;
 
-	public static int minDurability = 10;
+	public static int maxDamage = 0;
 	
 	static void LoadShops( File shopsDir ) {
 		  //initialize and setup the hash of shops

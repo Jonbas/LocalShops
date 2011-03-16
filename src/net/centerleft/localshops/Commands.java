@@ -428,7 +428,7 @@ public class Commands {
 		if(!list) {
 			String buySell = ( buy ? "buy" : "sell" );
 			message = ChatColor.AQUA + "To " + buySell + " an item on the list type: " +
-				ChatColor.WHITE + "/shop " + buySell + " ItemName [ammount]";
+				ChatColor.WHITE + "/shop " + buySell + " ItemName [amount]";
 			player.sendMessage(message);
 		} else {
 			player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/shop list buy" 
@@ -490,9 +490,10 @@ public class Commands {
 					if(items.size() > 0) {
 						itemName = items.get(0);
 					}
-					if( itemName != null && item.getDurability() < ShopData.minDurability) {
+					if( itemName != null && item.getDurability() > ShopData.maxDamage && ShopData.maxDamage != 0) {
 						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
 								+ ChatColor.AQUA + " is too damaged to sell.");
+						player.sendMessage("Current Damage: " + item.getDurability() + "/" + item.getType().getMaxDurability());
 						return false;
 					}
 				}
@@ -725,11 +726,6 @@ public class Commands {
 							if(items.size() > 0) {
 								itemName = items.get(0);
 							}
-							if( itemName != null && item.getDurability() < ShopData.minDurability) {
-								player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
-										+ ChatColor.AQUA + " is too damaged to sell.");
-								return false;
-							}
 						}
 						if(itemName == null) {
 							sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Item " + ChatColor.WHITE + item.getType().toString() + ChatColor.AQUA + " can not be added to the shop.");
@@ -758,9 +754,10 @@ public class Commands {
 					if(items.size() > 0) {
 						itemName = items.get(0);
 					}
-					if( itemName != null && item.getDurability() < ShopData.minDurability) {
+					if( itemName != null && item.getDurability() > ShopData.maxDamage && ShopData.maxDamage != 0) {
 						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
 								+ ChatColor.AQUA + " is too damaged to sell.");
+						player.sendMessage("Current Damage: " + item.getDurability() + "/" + item.getType().getMaxDurability());
 						return false;
 					}
 				}
@@ -816,9 +813,10 @@ public class Commands {
 					if(items.size() > 0) {
 						itemName = items.get(0);
 					}
-					if( itemName != null && item.getDurability() < ShopData.minDurability) {
+					if( itemName != null && item.getDurability() > ShopData.maxDamage && ShopData.maxDamage != 0) {
 						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
 								+ ChatColor.AQUA + " is too damaged to sell.");
+
 						return false;
 					}
 				}
