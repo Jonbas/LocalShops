@@ -34,6 +34,10 @@ public class PluginProperties {
 		
 		if(properties.keyExists("min-durability")) {
 			ShopData.minDurability = properties.getInt("min-durability");
+			if(ShopData.minDurability > 15) {
+				ShopData.minDurability = 15;
+				properties.setInt("min-durability", ShopData.minDurability);
+			}
 		} else {
 			properties.setInt("min-durability", ShopData.minDurability);
 		}

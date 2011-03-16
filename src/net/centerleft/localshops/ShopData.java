@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 
 import cuboidLocale.BookmarkedResult;
 import cuboidLocale.PrimitiveCuboid;
+import cuboidLocale.QuadTree;
 
 public class ShopData {
 	static HashMap<String, Shop> shops;
@@ -37,6 +38,9 @@ public class ShopData {
 		shops = new HashMap<String, Shop>();
 		shops.clear();
 		
+		LocalShops.cuboidTree = new QuadTree();
+
+		
 		String worldName = null;
 		boolean defaultWorld = false;
 		
@@ -53,9 +57,8 @@ public class ShopData {
 		File[] shopsList = shopsDir.listFiles();
 		for( File shop : shopsList ) {
 			
-			
-			
 			if (!shop.isFile()) continue;
+			if(!shop.getName().contains(".shop")) continue;
 			// read the file and put the data away nicely
 			Shop tempShop = new Shop();
 			String text = null;
@@ -371,11 +374,20 @@ public class ShopData {
 	private static boolean shopPositionOk( Shop shop, long[] xyzA, long[] xyzB ) {
 		BookmarkedResult res = new BookmarkedResult();
 		
+		//make sure coords are in right order
+		for( int i = 0; i < 3; i++) {
+			if( xyzA[i] > xyzB[i]) {
+				long temp = xyzA[i];
+				xyzA[i] = xyzB[i];
+				xyzB[i] = temp;
+			}
+		}
+		
 		//Need to test every position to account for variable shop sizes
 		
 		for( long x = xyzA[0]; x <= xyzB[0]; x++) {
-			for( long z = xyzA[2]; x <= xyzB[2]; z++) {
-				for( long y = xyzA[1]; x <= xyzB[1]; y++) {
+			for( long z = xyzA[2]; z <= xyzB[2]; z++) {
+				for( long y = xyzA[1]; y <= xyzB[1]; y++) {			
 					res = LocalShops.cuboidTree.relatedSearch(res.bookmark, x, y, z );
 					if( shopOverlaps(shop, res) ) return false;
 				}
@@ -389,8 +401,7 @@ public class ShopData {
 			for( PrimitiveCuboid foundShop : res.results) {
 				if(foundShop.name != null) {
 					if(foundShop.world.equalsIgnoreCase(shop.getWorldName())) {
-					System.out.println(PlayerData.chatPrefix + ChatColor.AQUA + "Could not create shop, it overlaps with " + ChatColor.WHITE 
-							+ foundShop.name );
+					System.out.println("Could not create shop, it overlaps with " + foundShop.name );
 					return true;
 					}
 				}

@@ -222,11 +222,20 @@ public class Commands {
 	private static boolean shopPositionOk( Player player, long[] xyzA, long[] xyzB ) {
 		BookmarkedResult res = new BookmarkedResult();
 		
+		//make sure coords are in right order
+		for( int i = 0; i < 3; i++) {
+			if( xyzA[i] > xyzB[i]) {
+				long temp = xyzA[i];
+				xyzA[i] = xyzB[i];
+				xyzB[i] = temp;
+			}
+		}
+		
 		//Need to test every position to account for variable shop sizes
 		
 		for( long x = xyzA[0]; x <= xyzB[0]; x++) {
-			for( long z = xyzA[2]; x <= xyzB[2]; z++) {
-				for( long y = xyzA[1]; x <= xyzB[1]; y++) {
+			for( long z = xyzA[2]; z <= xyzB[2]; z++) {
+				for( long y = xyzA[1]; y <= xyzB[1]; y++) {
 					res = LocalShops.cuboidTree.relatedSearch(res.bookmark, x, y, z );
 					if( shopOverlaps(player, res) ) return false;
 				}

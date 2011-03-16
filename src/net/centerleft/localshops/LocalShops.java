@@ -56,6 +56,7 @@ public class LocalShops extends JavaPlugin {
 	
 	public void onEnable() {
 		
+		QuadTree cuboidTree = new QuadTree();
 		playerResult = Collections.synchronizedMap(new HashMap<String, BookmarkedResult>());
 		
 		// add all the online users to the data trees
