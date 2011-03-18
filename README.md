@@ -12,7 +12,7 @@ Still TODO
 * minimum owner account balance for denying sale
 * log transactions
 
-* change command to /lshop
+* change command to /shop
 * change /shop set buy|sell
 
 Eventual Goal:
@@ -27,31 +27,31 @@ Implemented
 * Add shops to cuboid tree
 * check if user is in shop on move (fixed!)
 * file output
-* /lshop create
-* /lshop list
-* /lshop list buy|sell
-* /lshop buy|sell
-* /lshop add
-* /lshop remove
-* /lshop set sell
-* /lshop set add
-* /lshop set manager
-* /lshop set owner
-* /lshop destroy
+* /shop create
+* /shop list
+* /shop list buy|sell
+* /shop buy|sell
+* /shop add
+* /shop remove
+* /shop set sell
+* /shop set add
+* /shop set manager
+* /shop set owner
+* /shop destroy
 * created items.txt with unique names for each item and data combination
 * iConomy 4.0+ integration
 * GroupManager 0.99c integrated
 * admin override to everything
 * localshops.admin
 * buy, sell, remove partial name matching is better (based on shop inventory not every available item)
-* added command /lshop add itemname
-* added help for /lshop set
-* added /lshop set max command
+* added command /shop add itemname
+* added help for /shop set
+* added /shop set max command
 * added max stock level for items
 * changed shop file to itemID,Data=buy,sell,stock format
 * creates it's own items.txt file from inside the plugin
 * CbutD integration added
-* /lshop reload gives response
+* /shop reload gives response
 * fixed bug with selling an item that doesn't exist
 * fixed localshops.admin
 * gave shop owner or managers to buy or sell if price is 0
@@ -62,13 +62,13 @@ Implemented
 * added check for shop entry on log in, reload, and create/destroy
 * create shop overlap with other world problem
 * fixed bug with items not in items.txt list
-* added /lshop set unlimited money|stock
-* added /lshop list info
+* added /shop set unlimited money|stock
+* added /shop list info
 
 ** 1.11 **  
 
 * fixed problem with Permissions startup
-* fixed problem with /lshop sell command NPE fix
+* fixed problem with /shop sell command NPE fix
 
 ** 1.12 **  
 
@@ -85,10 +85,10 @@ Still TODO
 * log transactions
 * add messages when the amount of buy/sell changes because of money or space restrictions
 
-* change command to /lshop
-* change /lshop set buy|sell
+* change command to /shop
+* change /shop set buy|sell
 
 Eventual Goal:
 -----------
 * Display shop inventories in chests and purchase through inventory screen ++bump
->>>>>>> refs/heads/lshops
+>>>>>>> refs/heads/shops

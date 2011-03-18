@@ -79,9 +79,7 @@ public class Commands {
 				PrimitiveCuboid tempShopCuboid = new PrimitiveCuboid( xyzA, xyzB );
 				tempShopCuboid.name = shopName;
 				tempShopCuboid.world = player.getWorld().getName();
-				//insert the shop into the world
-				LocalShops.cuboidTree.insert(tempShopCuboid);
-				ShopData.shops.put(shopName, thisShop );
+
 				
 				if(ShopData.chargeForShop) {
 					String[] freeShop = {"freeshop"};
@@ -92,6 +90,10 @@ public class Commands {
 						}
 					}
 				}
+				
+				//insert the shop into the world
+				LocalShops.cuboidTree.insert(tempShopCuboid);
+				ShopData.shops.put(shopName, thisShop );
 				
 				//write the file
 				if( ShopData.saveShop(thisShop) ) { 
@@ -490,10 +492,17 @@ public class Commands {
 					if(items.size() > 0) {
 						itemName = items.get(0);
 					}
-					if( itemName != null && item.getDurability() > ShopData.maxDamage && ShopData.maxDamage != 0) {
+					
+					//calc durability prcnt
+					short damage;
+					if(item.getType() == Material.IRON_SWORD) {
+						damage = (short)((double)item.getDurability()/250*100);
+					} else {
+						damage = (short)((double)item.getDurability()/(double)item.getType().getMaxDurability()*100);
+					}
+					if( itemName != null && damage > ShopData.maxDamage && ShopData.maxDamage != 0) {
 						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
 								+ ChatColor.AQUA + " is too damaged to sell.");
-						player.sendMessage("Current Damage: " + item.getDurability() + "/" + item.getType().getMaxDurability());
 						return false;
 					}
 				}
@@ -754,10 +763,16 @@ public class Commands {
 					if(items.size() > 0) {
 						itemName = items.get(0);
 					}
-					if( itemName != null && item.getDurability() > ShopData.maxDamage && ShopData.maxDamage != 0) {
+					//calc durability prcnt
+					short damage;
+					if(item.getType() == Material.IRON_SWORD) {
+						damage = (short)((double)item.getDurability()/250*100);
+					} else {
+						damage = (short)((double)item.getDurability()/(double)item.getType().getMaxDurability()*100);
+					}
+					if( itemName != null && damage > ShopData.maxDamage && ShopData.maxDamage != 0) {
 						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
 								+ ChatColor.AQUA + " is too damaged to sell.");
-						player.sendMessage("Current Damage: " + item.getDurability() + "/" + item.getType().getMaxDurability());
 						return false;
 					}
 				}
@@ -813,7 +828,14 @@ public class Commands {
 					if(items.size() > 0) {
 						itemName = items.get(0);
 					}
-					if( itemName != null && item.getDurability() > ShopData.maxDamage && ShopData.maxDamage != 0) {
+					//calc durability prcnt
+					short damage;
+					if(item.getType() == Material.IRON_SWORD) {
+						damage = (short)((double)item.getDurability()/250*100);
+					} else {
+						damage = (short)((double)item.getDurability()/(double)item.getType().getMaxDurability()*100);
+					}
+					if( itemName != null && damage > ShopData.maxDamage && ShopData.maxDamage != 0) {
 						player.sendMessage(ChatColor.AQUA + "Sorry, that " + ChatColor.WHITE + itemName 
 								+ ChatColor.AQUA + " is too damaged to sell.");
 
