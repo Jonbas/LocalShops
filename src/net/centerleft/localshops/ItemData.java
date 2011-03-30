@@ -184,10 +184,18 @@ public class ItemData {
 	}
 	
 	public String getItemName(int itemNumber, int itemData) {
+		
+		//check if type and data match, if they do, return that one
 		for( int i = 0; i < this.itemNumber.size(); i++ ){
 			if( this.itemNumber.get(i) == itemNumber && this.itemData.get(i).dataValue == itemData ) {
 				return this.itemName.get(i);
 			}
+		}
+		
+		//check if this is armor or an item
+		ArrayList<String> itemList = getItemName(itemNumber);
+		if( itemList.size() == 1 ) {
+			return itemList.get(0);
 		}
 		
 		return null;

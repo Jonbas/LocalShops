@@ -1,7 +1,7 @@
 package net.centerleft.localshops;
 
-import org.anjocaido.groupmanager.GroupManager;
-import org.bukkit.event.server.PluginEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 
 import com.nijiko.coelho.iConomy.iConomy;
@@ -21,8 +21,7 @@ public class ShopsPluginListener extends ServerListener {
 		plugin = instance;
 	}
 
-    @Override
-    public void onPluginEnabled(PluginEvent event) {
+    public void onPluginEnabled(PluginEnableEvent  event) {
         if(event.getPlugin().getDescription().getName().equals("iConomy")) {
             iConomy = (iConomy)event.getPlugin();
             System.out.println("LocalShops: Attached to iConomy.");
@@ -40,8 +39,7 @@ public class ShopsPluginListener extends ServerListener {
         } 
     }
     
-    @Override
-    public void onPluginDisabled(PluginEvent event) {
+    public void onPluginDisabled(PluginDisableEvent event) {
     	if(event.getPlugin().getDescription().getName().equals("iConomy")) {
             iConomy = null;
             System.out.println("LocalShops: Lost connection to iConomy.");
