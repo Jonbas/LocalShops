@@ -102,6 +102,7 @@ public class LocalShops extends JavaPlugin {
                 ShopsPluginListener.useiConomy = true;
             } else {
             	ShopsPluginListener.useiConomy = false;
+            	System.out.println("LocalShops: waiting for iConomy to start.");
             }
         } else {
         	System.out.println("LocalShops: iConomy not found.");

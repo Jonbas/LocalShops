@@ -21,7 +21,8 @@ public class ShopsPluginListener extends ServerListener {
 		plugin = instance;
 	}
 
-    public void onPluginEnabled(PluginEnableEvent  event) {
+	@Override
+	public void onPluginEnable(PluginEnableEvent event) {
         if(event.getPlugin().getDescription().getName().equals("iConomy")) {
             iConomy = (iConomy)event.getPlugin();
             System.out.println("LocalShops: Attached to iConomy.");
@@ -39,7 +40,8 @@ public class ShopsPluginListener extends ServerListener {
         } 
     }
     
-    public void onPluginDisabled(PluginDisableEvent event) {
+	@Override
+    public void onPluginDisable(PluginDisableEvent event) {
     	if(event.getPlugin().getDescription().getName().equals("iConomy")) {
             iConomy = null;
             System.out.println("LocalShops: Lost connection to iConomy.");

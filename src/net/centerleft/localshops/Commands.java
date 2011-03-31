@@ -496,16 +496,16 @@ public class Commands {
 				try {
 					amount = Integer.parseInt(args[1]);
 				} catch( NumberFormatException ex1 ) {
-					itemName = args[1];
-					item = null;
+					item = LocalShops.itemList.getItem(player, args[1]);
+					itemName = null;
 				}
 			}
 		} else if(args.length == 3 ) {
 			/*	/shop sell item #
 			 *  /shop sell item all
 			 */
-			itemName = args[1];
-			item = null;
+			item = LocalShops.itemList.getItem(player, args[1]);
+			itemName = null;
 			if(!args[2].equalsIgnoreCase("all")) {
 				try {
 					amount = Integer.parseInt(args[2]);
@@ -703,16 +703,16 @@ public class Commands {
 				try {
 					amount = Integer.parseInt(args[1]);
 				} catch( NumberFormatException ex1 ) {
-					itemName = args[1];
-					item = null;
+					item = LocalShops.itemList.getItem(player, args[1]);
+					itemName = null;
 				}
 			}
 		} else if(args.length == 3 ) {
 			/*	/shop add item #
 			 *  /shop add item all
 			 */
-			itemName = args[1];
-			item = null;
+			item = LocalShops.itemList.getItem(player, args[1]);
+			itemName = null;
 			if(!args[2].equalsIgnoreCase("all")) {
 				try {
 					amount = Integer.parseInt(args[2]);
@@ -895,9 +895,10 @@ public class Commands {
 						amount = numberToRemove - (numberToRemove%shop.itemBuyAmount(itemName));
 					}
 					
-					if(shop.itemBuyAmount(itemName) > 1) {
-						player.sendMessage(ChatColor.AQUA + "Purchase amount change to " + ChatColor.WHITE + amount 
-								+ ChatColor.AQUA + " to fit bundle size of " + ChatColor.WHITE + shop.itemBuyAmount(itemName));
+					if(amount%shop.itemBuyAmount(itemName) != 0) {
+						player.sendMessage(ChatColor.AQUA + "The bundle size is  " + ChatColor.WHITE 
+								+ shop.itemBuyAmount(itemName) + ChatColor.AQUA + " order reduced to " 
+								+ ChatColor.WHITE + (int)(amount / shop.itemBuyAmount(itemName)));
 					}
 				} catch (NumberFormatException ex2 ) {
 					if( args[2].equalsIgnoreCase("all")) {
@@ -1476,7 +1477,7 @@ public class Commands {
 	
 	private static void givePlayerItem(Player player, ItemStack item, int amount) {
 		int maxStackSize = 64;
-		
+				
 		//fill all the existing stacks first
 		for(int i: player.getInventory().all(item.getType()).keySet()) {
 			if( amount == 0 ) continue;
@@ -1496,19 +1497,23 @@ public class Commands {
 			
 		}
 		
-		
-		for(ItemStack thisSlot: player.getInventory().getContents()) {
+		for(int i = 0; i < 36; i++ ) {
+			ItemStack thisSlot = player.getInventory().getItem(i);
 			if(thisSlot == null || thisSlot.getType() == Material.AIR) {
 				if (amount == 0) continue;
 				if(amount >= maxStackSize) {
-					thisSlot = new ItemStack(item.getType(), maxStackSize);
+					item.setAmount(maxStackSize);
+					player.getInventory().setItem(i, item);
 					amount -= maxStackSize; 
 				} else {
-					thisSlot = new ItemStack(item.getType(), amount);
+					item.setAmount(amount);
+					player.getInventory().setItem(i, item);
 					amount = 0;
 				}
 			}
 		}
+		
+		
 		
 		while( amount > 0 ) {
 			if( amount >= maxStackSize ) {
