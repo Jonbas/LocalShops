@@ -77,6 +77,7 @@ public class LocalShops extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLUGIN_ENABLE, pluginListener, Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLUGIN_DISABLE, pluginListener, Priority.Monitor, this);
 		
+		
 		//check hook for permissions
 		Plugin p = pm.getPlugin("Permissions");
 		if (p != null) {
@@ -169,6 +170,11 @@ public class LocalShops extends JavaPlugin {
 					for(Player player: this.getServer().getOnlinePlayers()) {
 						ShopsPlayerListener.checkPlayerPosition(this, player);
 					}
+				} else if(args[0].equalsIgnoreCase("move")) {
+					Commands.moveShop(sender, trimmedArgs);
+					for(Player player: this.getServer().getOnlinePlayers()) {
+						ShopsPlayerListener.checkPlayerPosition(this, player);
+					}
 				} else if(args[0].equalsIgnoreCase("list")) {
 					Commands.listShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("reload")) {
@@ -204,10 +210,10 @@ public class LocalShops extends JavaPlugin {
 						playerData.get(playerName).isSelecting = !playerData.get(playerName).isSelecting;
 						
 						if(playerData.get(playerName).isSelecting) {
-							sender.sendMessage("Right click to select the first corner for a shop.");
-							sender.sendMessage("Left click to select the second corner for the shop.");
+							sender.sendMessage(ChatColor.AQUA + "Right click to select the first corner for a shop.");
+							sender.sendMessage(ChatColor.AQUA + "Left click to select the second corner for the shop.");
 						} else {
-							sender.sendMessage("Selection disabled");
+							sender.sendMessage(ChatColor.AQUA + "Selection disabled");
 							playerData.put(playerName, new PlayerData());
 						}
 					}

@@ -16,6 +16,12 @@ public class PluginProperties {
 			properties.setLong("shop-cost", ShopData.shopCost);
 		}
 		
+		if(properties.keyExists("move-cost")) {
+			ShopData.moveCost = properties.getLong("move-cost");
+		} else {
+			properties.setLong("move-cost", ShopData.moveCost);
+		}
+		
 		if(properties.keyExists("shop-width")) {
 			ShopData.shopSize = properties.getLong("shop-width");
 		} else {
@@ -26,6 +32,18 @@ public class PluginProperties {
 			ShopData.shopHeight = properties.getLong("shop-height");
 		} else {
 			properties.setLong("shop-height", ShopData.shopHeight);
+		}
+		
+		if(properties.keyExists("max-width")) {
+			ShopData.maxWidth = properties.getLong("max-width");
+		} else {
+			properties.setLong("max-width", ShopData.maxWidth);
+		}
+		
+		if(properties.keyExists("max-height")) {
+			ShopData.maxHeight = properties.getLong("max-height");
+		} else {
+			properties.setLong("max-height", ShopData.maxHeight);
 		}
 		
 		if(properties.keyExists("log-transactions")) {

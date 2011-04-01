@@ -18,11 +18,14 @@ public class PlayerData {
 	static String chatPrefix = ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA + "] ";
 	
 	public boolean isSelecting;
+	public boolean sizeOkay;
 	private long xyzA[] = null;
 	private long xyzB[] = null;
+	private String size = "";
 	
 	public PlayerData() {
 		isSelecting = false;
+		sizeOkay = false;
 	}
 	
 	public long[] getPositionA() {
@@ -35,11 +38,36 @@ public class PlayerData {
 	
 	public void setPositionA(long[] xyz) {
 		xyzA = xyz.clone();
+		checkSize(xyzA, xyzB);
 	}
 	
 	public void setPositionB(long[] xyz) {
 		xyzB = xyz.clone();
+		checkSize(xyzA, xyzB);
 	}
+	
+	public String getSizeString() {
+		return size;
+	}
+	
+	private boolean checkSize(long[] xyzA, long[] xyzB) {
+		if(xyzA != null && xyzB != null) {
+			long width1 = Math.abs(xyzA[0] - xyzB[0]) + 1;
+			long height = Math.abs(xyzA[1] - xyzB[1]) + 1;
+			long width2 = Math.abs(xyzA[2] - xyzB[2]) + 1;
+			
+			size = "" + width1 + "x" + height + "x" + width2;
+			
+			if( width1 > ShopData.maxWidth || width2 > ShopData.maxWidth || height > ShopData.maxHeight ) {
+				return false;
+			} else {
+				return false;
+			}
+		}
+		return false;
+		
+	}
+	
 	
 	
 	static boolean addPlayerToShop( Player player, String shopName ) {
@@ -54,9 +82,10 @@ public class PlayerData {
 		String playerName = player.getName();
 		String playerWorld = player.getWorld().getName();
 				
-		if( playerShopList.get(playerName).contains(shopName) && 
-				ShopData.shops.get(shopName).getWorldName().equalsIgnoreCase(playerWorld)) {
-			return true;
+		if( playerShopList.get(playerName).contains(shopName) ){
+			if(	ShopData.shops.get(shopName).getWorldName().equalsIgnoreCase(playerWorld)) {
+				return true;
+			}
 		}
 		return false;
 	}

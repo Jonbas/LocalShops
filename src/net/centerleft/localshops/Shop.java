@@ -323,9 +323,15 @@ public class Shop {
 		long[] xyz = new long[3];
 		long[] xyzA = shopLocation.getLocation1();
 		long[] xyzB = shopLocation.getLocation2();
-		xyz[0] = (Math.abs(xyzA[0]-xyzB[0]))/2 + xyzA[0];
-		xyz[1] = (Math.abs(xyzA[1]-xyzB[1]))/2 + xyzA[1];
-		xyz[2] = (Math.abs(xyzA[2]-xyzB[2]))/2 + xyzA[2];
+		
+		for(int i = 0; i < 3; i++) {
+			if(xyzA[i] < xyzB[i]) {
+				xyz[i] =  xyzA[i] + (Math.abs(xyzA[i]-xyzB[i]))/2;
+			} else {
+				xyz[i] =  xyzA[i] - (Math.abs(xyzA[i]-xyzB[i]))/2;
+			}
+		}
+
 		return xyz;
 	}
 

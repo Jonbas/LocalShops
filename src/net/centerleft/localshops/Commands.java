@@ -60,10 +60,23 @@ public class Commands {
 			
 			if(LocalShops.playerData.containsKey(player.getName()) 
 					&& LocalShops.playerData.get(player.getName()).isSelecting ) {
+				if (!LocalShops.playerData.get(player.getName()).sizeOkay) {
+					if (!canUseCommand(player, "admin".split(""))) {
+						String size = "" + ShopData.maxWidth + "x" + ShopData.maxHeight + "x" + ShopData.maxWidth;
+						player.sendMessage(ChatColor.AQUA + "Problem with selection. Max size is "
+								+ ChatColor.WHITE + size);
+						return false;
+					}
+				}
 				//if a custom size had been set, use that
 				PlayerData data = LocalShops.playerData.get(player.getName());
-				xyzA = data.getPositionA().clone();
-				xyzB = data.getPositionB().clone();
+				xyzA = data.getPositionA();
+				xyzB = data.getPositionB();
+				
+				if(xyzA == null || xyzB == null) {
+					player.sendMessage(ChatColor.AQUA + "Problem with selection.");
+					return false;
+				}
 			} else {
 				//otherwise calculate the shop from the player's location
 				if( ShopData.shopSize % 2 == 1) {
@@ -106,6 +119,8 @@ public class Commands {
 				//insert the shop into the world
 				LocalShops.cuboidTree.insert(tempShopCuboid);
 				ShopData.shops.put(shopName, thisShop );
+
+				LocalShops.playerData.put(player.getName(), new PlayerData());
 				
 				//write the file
 				if( ShopData.saveShop(thisShop) ) { 
@@ -115,6 +130,7 @@ public class Commands {
 					player.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "There was an error, could not create shop.");
 					return false;
 				}
+				
 			} 
 		}
 		if(args.length != 2) {
@@ -125,6 +141,173 @@ public class Commands {
 		}
 		return false;
 	}
+	
+	static boolean moveShop( CommandSender sender, String[] args ) {
+		//TODO Change this so that non players can create shops as long as they send x, y, z coords
+		if(canUseCommand(sender, args) && args.length == 2 && (sender instanceof Player)) {
+			//command format /shop move ShopName
+			Player player = (Player)sender;
+			Location location = player.getLocation();
+			Shop thisShop = null;
+			
+			long[] xyzAold = new long[3];
+			long[] xyzBold = new long[3];
+			
+			//check to see if that shop name exists and has access
+			boolean foundShop = false;
+			Iterator<String> itr = ShopData.shops.keySet().iterator();
+			while( itr.hasNext() ) {
+				String name = itr.next();
+				if( name.equalsIgnoreCase(args[1]) ) {
+					thisShop = ShopData.shops.get(name);
+					foundShop = true;
+				}
+			}
+			
+			if(!foundShop) {
+				player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Could not find shop: " + ChatColor.WHITE 
+						+ args[1]);
+				return false;
+			}
+			
+			if(!thisShop.getShopOwner().equalsIgnoreCase(player.getName()) 
+					&& !canUseCommand(player, "admin".split("")) ) {
+				player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You must be the shop owner to move this shop.");
+				return false;
+			}
+			
+			//store shop info
+			String shopName = thisShop.getShopName();
+			xyzAold = thisShop.getLocation1();
+			xyzBold = thisShop.getLocation2();
+			
+			long x = (long)location.getX();
+			long y = (long)location.getY();
+			long z = (long)location.getZ();
+			
+			
+			//setup the cuboid for the tree
+			long[] xyzA = new long[3];
+			long[] xyzB = new long[3];
+			
+			if(LocalShops.playerData.containsKey(player.getName()) 
+					&& LocalShops.playerData.get(player.getName()).isSelecting ) {
+				if (!LocalShops.playerData.get(player.getName()).sizeOkay) {
+					if (!canUseCommand(player, "admin".split(""))) {
+						String size = "" + ShopData.maxWidth + "x"
+								+ ShopData.maxHeight + "x" + ShopData.maxWidth;
+						player.sendMessage(ChatColor.AQUA
+								+ "Problem with selection. Max size is "
+								+ ChatColor.WHITE + size);
+						return false;
+					}
+				}
+				//if a custom size had been set, use that
+				PlayerData data = LocalShops.playerData.get(player.getName());
+				xyzA = data.getPositionA().clone();
+				xyzB = data.getPositionB().clone();
+				
+				if(xyzA == null || xyzB == null) {
+					player.sendMessage(ChatColor.AQUA + "Problem with selection.");
+					return false;
+				}
+			} else {
+				//otherwise calculate the shop from the player's location
+				if( ShopData.shopSize % 2 == 1) {
+					xyzA[0] = x - (ShopData.shopSize / 2);
+					xyzB[0] = x + (ShopData.shopSize / 2);
+					xyzA[2] = z - (ShopData.shopSize / 2);
+					xyzB[2] = z + (ShopData.shopSize / 2);
+				} else {
+					xyzA[0] = x - (ShopData.shopSize / 2) + 1;
+					xyzB[0] = x + (ShopData.shopSize / 2);
+					xyzA[2] = z - (ShopData.shopSize / 2) + 1;
+					xyzB[2] = z + (ShopData.shopSize / 2);
+				}
+				
+				xyzA[1] = y - 1;
+				xyzB[1] = y + ShopData.shopHeight - 1;
+				
+			}
+			
+			
+			//remove the old shop from the cuboid
+			long[] xyz = thisShop.getLocation();
+			BookmarkedResult res = new BookmarkedResult();
+
+			res = LocalShops.cuboidTree.relatedSearch(res.bookmark, xyz[0],
+					xyz[1], xyz[2]);
+
+			// get the shop's tree node and delete it
+			for (PrimitiveCuboid shopLocation : res.results) {
+
+				// for each shop that you find, check to see if we're already in it
+				// this should only find one shop node
+				if (shopLocation.name == null)
+					continue;
+				if (!shopLocation.world.equalsIgnoreCase(thisShop.getWorldName()))
+					continue;
+
+				LocalShops.cuboidTree.delete(shopLocation);
+			}
+			
+			//need to check to see if the shop overlaps another shop
+			if( shopPositionOk( player,  xyzA, xyzB )) {
+				
+				PrimitiveCuboid tempShopCuboid = new PrimitiveCuboid( xyzA, xyzB );
+				tempShopCuboid.name = shopName;
+				tempShopCuboid.world = player.getWorld().getName();
+
+				
+				if(ShopData.chargeForMove) {
+					String[] freemove = {"freemove"};
+					if(!canUseCommand(sender, freemove)) {
+						if(!PlayerData.chargePlayer(player.getName(), ShopData.shopCost)) {
+							//insert the old cuboid back into the world
+							tempShopCuboid = new PrimitiveCuboid( xyzAold, xyzBold );
+							tempShopCuboid.name = shopName;
+							tempShopCuboid.world = thisShop.getWorldName();
+							LocalShops.cuboidTree.insert(tempShopCuboid);
+							
+							player.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "You need " + ShopData.moveCost + " " + ShopData.currencyName + " to move a shop.");
+							return false;
+						}
+					}
+				}
+				
+				//insert the shop into the world
+				LocalShops.cuboidTree.insert(tempShopCuboid);
+				thisShop.setWorldName(player.getWorld().getName());
+				thisShop.setLocation( xyzA, xyzB );
+				ShopData.shops.put(shopName, thisShop );
+
+				LocalShops.playerData.put(player.getName(), new PlayerData());
+				
+				//write the file
+				if( ShopData.saveShop(thisShop) ) { 
+					player.sendMessage( PlayerData.chatPrefix + ChatColor.WHITE + shopName + ChatColor.AQUA + " was moved successfully.");
+					return true;
+				} else {
+					player.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "There was an error, could not move shop.");
+					return false;
+				}
+			} else {
+				//insert the old cuboid back into the world
+				PrimitiveCuboid tempShopCuboid = new PrimitiveCuboid( xyzAold, xyzBold );
+				tempShopCuboid.name = shopName;
+				tempShopCuboid.world = thisShop.getWorldName();
+				LocalShops.cuboidTree.insert(tempShopCuboid);
+			}
+		}
+		if(args.length != 2) {
+			sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop move [ShopName]");
+		}
+		if(!canUseCommand(sender, args)) {
+			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
+		}
+		return false;
+	}
+	
 	
 	static boolean canUseCommand( CommandSender sender, String[] args ) {
 		boolean useManager = ShopsPluginListener.usePermissions;
@@ -143,22 +326,30 @@ public class Commands {
 		if(args.length >= 1) {
 			
 			if(args[0].equalsIgnoreCase("create") || (args[0].equalsIgnoreCase("select"))) {
+				if(useManager) {
 					return pm.has(player, "localshops.create");
+				} 
+			} if(args[0].equalsIgnoreCase("move")) {
+				if(useManager) {
+					return pm.has(player, "localshops.move");
+				} 
+			} if(args[0].equalsIgnoreCase("freemove")) {
+				if(useManager) {
+					return pm.has(player, "localshops.move.free");
+				} 
 			} else if(args[0].equalsIgnoreCase("freeshop")) {
+				if(useManager) {
 					return pm.has(player, "localshops.create.free");
+				} 
 			} else if(args[0].equalsIgnoreCase("destroy")) {
 				if(useManager) {
 					return pm.has(player, "localshops.destroy");
-				} else if ( sender.isOp() ) {
-					return true;
-				}
+				} 
 				
 			} else if(args[0].equalsIgnoreCase("reload")) {
 				if(useManager) {
 					return pm.has(player, "localshops.reload");
-				} else if ( sender.isOp() ) {
-					return true;
-				}
+				} 
 				
 			} else if(args[0].equalsIgnoreCase("sell") || args[0].equalsIgnoreCase("buy") 
 					|| args[0].equalsIgnoreCase("list")) {
@@ -167,8 +358,8 @@ public class Commands {
 				} else {
 					return true;
 				}
-			} else if (args[0].equalsIgnoreCase("set") && args.length > 1){
-				if(args[1].equalsIgnoreCase("owner")) {
+			} else if (args[0].equalsIgnoreCase("set")){
+				if(args.length > 1 && args[1].equalsIgnoreCase("owner")) {
 					if(useManager) {
 						return pm.has(player, "localshops.manage.owner");
 					} else {
@@ -188,7 +379,7 @@ public class Commands {
 					return true;
 				}
 			} 
-				
+	
 		}
 		return false;
 	}
@@ -219,6 +410,13 @@ public class Commands {
 		String[] create = { "create" };
 		if(canUseCommand(sender, create)) {
 			sender.sendMessage( ChatColor.WHITE + "   /shop create [ShopName]" + ChatColor.AQUA + " - Create a shop at your location.");
+			sender.sendMessage( ChatColor.WHITE + "   /shop select" + ChatColor.AQUA + " - Select two corners for custom shop size.");
+			
+		}
+		
+		String[] move = { "move" };
+		if(canUseCommand(sender, move)) {
+			sender.sendMessage( ChatColor.WHITE + "   /shop move [ShopName]" + ChatColor.AQUA + " - Move a shop to your location.");
 			
 		}
 		
@@ -1402,7 +1600,7 @@ public class Commands {
 		}
 		
 		/* Available formats:
-		 *  /shop remove itemName
+		 *  /shop destroy
 		 */
 		
 		Player player = (Player)sender;
@@ -1421,6 +1619,8 @@ public class Commands {
 			sender.sendMessage(PlayerData.chatPrefix + ChatColor.WHITE 
 					+ shop.getShopName() + ChatColor.AQUA + " has been destroyed");
 			ShopData.deleteShop(shop);
+			
+			
 
 		} else {
 			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
