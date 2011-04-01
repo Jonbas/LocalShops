@@ -17,6 +17,31 @@ public class PlayerData {
 	static Map<String, List<String>> playerShopList = Collections.synchronizedMap(new HashMap<String, List<String>>());
 	static String chatPrefix = ChatColor.AQUA + "[" + ChatColor.WHITE + "Shop" + ChatColor.AQUA + "] ";
 	
+	public boolean isSelecting;
+	private long xyzA[] = null;
+	private long xyzB[] = null;
+	
+	public PlayerData() {
+		isSelecting = false;
+	}
+	
+	public long[] getPositionA() {
+		return xyzA;
+	}
+	
+	public long[] getPositionB() {
+		return xyzB;
+	}
+	
+	public void setPositionA(long[] xyz) {
+		xyzA = xyz.clone();
+	}
+	
+	public void setPositionB(long[] xyz) {
+		xyzB = xyz.clone();
+	}
+	
+	
 	static boolean addPlayerToShop( Player player, String shopName ) {
 		if( !playerIsInShop( player, shopName ) && 
 				ShopData.shops.get(shopName).getWorldName().equalsIgnoreCase(player.getWorld().getName())){

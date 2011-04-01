@@ -49,8 +49,8 @@ public class LocalShops extends JavaPlugin {
 	static PropertyHandler properties;
 	
 	
-	
 	static ItemData itemList = new ItemData();
+	static Map<String, PlayerData> playerData; //synchronized player hash
 	
 	public Map<String, BookmarkedResult> playerResult;  //synchronized result buffer hash
 	
@@ -58,6 +58,7 @@ public class LocalShops extends JavaPlugin {
 		
 		QuadTree cuboidTree = new QuadTree();
 		playerResult = Collections.synchronizedMap(new HashMap<String, BookmarkedResult>());
+		playerData = Collections.synchronizedMap(new HashMap<String, PlayerData>());
 		
 		// add all the online users to the data trees
 		for( Player player : this.getServer().getOnlinePlayers() ) {
@@ -72,6 +73,7 @@ public class LocalShops extends JavaPlugin {
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLUGIN_ENABLE, pluginListener, Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLUGIN_DISABLE, pluginListener, Priority.Monitor, this);
 		
@@ -192,6 +194,23 @@ public class LocalShops extends JavaPlugin {
 					Commands.buyItemShop(sender, trimmedArgs);
 				} else if(args[0].equalsIgnoreCase("set")) {
 					Commands.setItemShop(sender, trimmedArgs);
+				} else if(args[0].equalsIgnoreCase("select")) {
+					if(Commands.canUseCommand(sender, args)) {
+						if(!(sender instanceof Player)) return false;
+						String playerName = ((Player)sender).getName();
+						if(!playerData.containsKey(playerName)) {
+							playerData.put(playerName, new PlayerData());
+						}
+						playerData.get(playerName).isSelecting = !playerData.get(playerName).isSelecting;
+						
+						if(playerData.get(playerName).isSelecting) {
+							sender.sendMessage("Right click to select the first corner for a shop.");
+							sender.sendMessage("Left click to select the second corner for the shop.");
+						} else {
+							sender.sendMessage("Selection disabled");
+							playerData.put(playerName, new PlayerData());
+						}
+					}
 				} else {
 					Commands.printHelp(sender, args);
 				}

@@ -24,7 +24,8 @@ public class Shop {
 		shopName = null;
 		shopInventory = new HashMap<String, Item>();
 		shopInventory.clear();
-		shopLocation = new Location(0,0,0);
+		long[] xyz = {0,0,0};
+		shopLocation = new Location(xyz, xyz);
 		shopOwner = "";
 		shopCreator = "";
 		shopManagers = null;
@@ -103,49 +104,29 @@ public class Shop {
 	}
 	
 	private class Location {
-		private long lx, ly, lz;
+		private long[] xyzA = {0,0,0};
+		private long[] xyzB = {0,0,0};
 		
-		public Location(long x, long y, long z) {
-			lx = x;
-			ly = y;
-			lz = z;
+		public Location(long[] xyzA, long[] xyzB) {
+			this.xyzA = xyzA.clone();
+			this.xyzB = xyzB.clone();
 		}
 		
-		public Location(long[] xyz) {
-			if(xyz.length == 3) {
-				lx = xyz[0];
-				ly = xyz[1];
-				lz = xyz[2];
-			} else {
-				lx = 0;
-				ly = 0;
-				lz = 0;
-			}
+		public Location() {
+			
+		}
+
+		public long[] getLocation1() {
+			return xyzA;
 		}
 		
-		public long[] getLocation() {
-			long[] location = {lx, ly, lz};
-			return location;
+		public long[] getLocation2() {
+			return xyzB;
 		}
 		
-		public boolean setLocation(long x, long y, long z) {
-			lx = x;
-			ly = y;
-			lz = z;
-			return true;
-		}
-		
-		public boolean setLocation(long[] xyz) {
-			if(xyz.length == 3) {
-				lx = xyz[0];
-				ly = xyz[1];
-				lz = xyz[2];
-			} else {
-				lx = 0;
-				ly = 0;
-				lz = 0;
-				return false;
-			}
+		public boolean setLocation(long[] xyzA, long[] xyzB) {
+			this.xyzA = xyzA.clone();
+			this.xyzB = xyzB.clone();
 			return true;
 		}
 		
@@ -164,13 +145,10 @@ public class Shop {
 		
 	}
 
-	public void setLocation(long[] position) {
-		shopLocation.setLocation(position);
+	public void setLocation(long[] position1, long[] position2) {
+		shopLocation.setLocation(position1, position2);
 	}
 	
-	public void setLocation( long x, long y, long z) {
-		shopLocation.setLocation(x, y, z);
-	}
 
 	public void setUnlimitedStock(boolean b) {
 		unlimitedStock = b;
@@ -209,9 +187,17 @@ public class Shop {
 		return this.shopCreator;
 	}
 
-	public String getShopPositionString() {
+	public String getShopPosition1String() {
 		String returnString = "";
-		for( long coord : shopLocation.getLocation()) {
+		for( long coord : shopLocation.getLocation1()) {
+			returnString += coord + ",";
+		}
+		return returnString;
+	}
+	
+	public String getShopPosition2String() {
+		String returnString = "";
+		for( long coord : shopLocation.getLocation2()) {
 			returnString += coord + ",";
 		}
 		return returnString;
@@ -325,9 +311,22 @@ public class Shop {
 		
 	}
 
+	public long[] getLocation1() {
+		return shopLocation.getLocation1();
+	}
+	
+	public long[] getLocation2() {
+		return shopLocation.getLocation2();
+	}
+	
 	public long[] getLocation() {
-		
-		return shopLocation.getLocation();
+		long[] xyz = new long[3];
+		long[] xyzA = shopLocation.getLocation1();
+		long[] xyzB = shopLocation.getLocation2();
+		xyz[0] = (Math.abs(xyzA[0]-xyzB[0]))/2 + xyzA[0];
+		xyz[1] = (Math.abs(xyzA[1]-xyzB[1]))/2 + xyzA[1];
+		xyz[2] = (Math.abs(xyzA[2]-xyzB[2]))/2 + xyzA[2];
+		return xyz;
 	}
 
 	public int itemMaxStock(String itemName) {

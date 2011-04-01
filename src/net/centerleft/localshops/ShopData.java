@@ -227,7 +227,51 @@ public class ShopData {
 									lz = 0;
 									System.out.println( LocalShops.pluginName + ": Error - Problem with position data in " + shop.getName() );
 								}
-								tempShop.setLocation(lx, ly, lz);
+								tempShop.setLocation(xyzA, xyzB);
+								
+							} else if(split[0].equalsIgnoreCase("position1")) {
+									String[] args = split[1].split(",");
+									
+									xyzA = new long[3];
+									xyzB = new long[3];
+									try {
+		
+										xyzA[0] = Long.parseLong(args[0].trim());
+										xyzA[1] = Long.parseLong(args[1].trim());
+										xyzA[2] = Long.parseLong(args[2].trim());
+										
+									} catch (NumberFormatException ex2) {
+								
+										
+										xyzA[0] = 0;
+										xyzA[1] = 0;
+										xyzA[2] = 0;
+										System.out.println( LocalShops.pluginName + ": Error - Problem with position1 data in " + shop.getName() );
+									}
+									xyzB = tempShop.getLocation2();
+									tempShop.setLocation(xyzA, xyzB);
+									
+							} else if(split[0].equalsIgnoreCase("position2")) {
+								String[] args = split[1].split(",");
+								
+								xyzA = new long[3];
+								xyzB = new long[3];
+								try {
+	
+									xyzB[0] = Long.parseLong(args[0].trim());
+									xyzB[1] = Long.parseLong(args[1].trim());
+									xyzB[2] = Long.parseLong(args[2].trim());
+									
+								} catch (NumberFormatException ex2) {
+							
+									
+									xyzB[0] = 0;
+									xyzB[1] = 0;
+									xyzB[2] = 0;
+									System.out.println( LocalShops.pluginName + ": Error - Problem with position2 data in " + shop.getName() );
+								}
+								xyzA = tempShop.getLocation1();
+								tempShop.setLocation(xyzA, xyzB);
 									
 							} else if(split[0].equalsIgnoreCase("unlimited")) {
 								if(split[1].equalsIgnoreCase("true")) {
@@ -259,7 +303,8 @@ public class ShopData {
 					}
 				}
 				
-
+				tempShopCuboid = new PrimitiveCuboid( tempShop.getLocation1(), tempShop.getLocation2() );
+				
 				tempShopCuboid.name = tempShop.getShopName();
 				tempShopCuboid.world = tempShop.getWorldName();
 				
@@ -308,7 +353,8 @@ public class ShopData {
 			
 			fileOutput.add("managers=" + outString + "\n");
 			fileOutput.add("creator=" + shop.getShopCreator() + "\n");
-			fileOutput.add("position=" + shop.getShopPositionString() + "\n");
+			fileOutput.add("position1=" + shop.getShopPosition1String() + "\n");
+			fileOutput.add("position2=" + shop.getShopPosition2String() + "\n");
 			fileOutput.add("unlimited-money=" + shop.getValueofUnlimitedMoney() + "\n");
 			fileOutput.add("unlimited-stock=" + shop.getValueofUnlimitedStock() + "\n");
 			

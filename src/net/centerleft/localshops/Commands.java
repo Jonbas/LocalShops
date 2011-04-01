@@ -48,7 +48,7 @@ public class Commands {
 			
 			Shop thisShop = new Shop();
 			
-			thisShop.setLocation(x, y, z);
+			
 			thisShop.setShopCreator(player.getName());
 			thisShop.setShopOwner(player.getName());
 			thisShop.setShopName(shopName);
@@ -58,20 +58,32 @@ public class Commands {
 			long[] xyzA = new long[3];
 			long[] xyzB = new long[3];
 			
-			if( ShopData.shopSize % 2 == 1) {
-				xyzA[0] = x - (ShopData.shopSize / 2);
-				xyzB[0] = x + (ShopData.shopSize / 2);
-				xyzA[2] = z - (ShopData.shopSize / 2);
-				xyzB[2] = z + (ShopData.shopSize / 2);
+			if(LocalShops.playerData.containsKey(player.getName()) 
+					&& LocalShops.playerData.get(player.getName()).isSelecting ) {
+				//if a custom size had been set, use that
+				PlayerData data = LocalShops.playerData.get(player.getName());
+				xyzA = data.getPositionA().clone();
+				xyzB = data.getPositionB().clone();
 			} else {
-				xyzA[0] = x - (ShopData.shopSize / 2) + 1;
-				xyzB[0] = x + (ShopData.shopSize / 2);
-				xyzA[2] = z - (ShopData.shopSize / 2) + 1;
-				xyzB[2] = z + (ShopData.shopSize / 2);
+				//otherwise calculate the shop from the player's location
+				if( ShopData.shopSize % 2 == 1) {
+					xyzA[0] = x - (ShopData.shopSize / 2);
+					xyzB[0] = x + (ShopData.shopSize / 2);
+					xyzA[2] = z - (ShopData.shopSize / 2);
+					xyzB[2] = z + (ShopData.shopSize / 2);
+				} else {
+					xyzA[0] = x - (ShopData.shopSize / 2) + 1;
+					xyzB[0] = x + (ShopData.shopSize / 2);
+					xyzA[2] = z - (ShopData.shopSize / 2) + 1;
+					xyzB[2] = z + (ShopData.shopSize / 2);
+				}
+				
+				xyzA[1] = y - 1;
+				xyzB[1] = y + ShopData.shopHeight - 1;
+				
 			}
 			
-			xyzA[1] = y - 1;
-			xyzB[1] = y + ShopData.shopHeight - 1;
+			thisShop.setLocation( xyzA, xyzB );
 			
 			//need to check to see if the shop overlaps another shop
 			if( shopPositionOk( player,  xyzA, xyzB )) {
@@ -130,7 +142,7 @@ public class Commands {
 		
 		if(args.length >= 1) {
 			
-			if(args[0].equalsIgnoreCase("create")) {
+			if(args[0].equalsIgnoreCase("create") || (args[0].equalsIgnoreCase("select"))) {
 					return pm.has(player, "localshops.create");
 			} else if(args[0].equalsIgnoreCase("freeshop")) {
 					return pm.has(player, "localshops.create.free");
@@ -175,7 +187,7 @@ public class Commands {
 				} else {
 					return true;
 				}
-			}
+			} 
 				
 		}
 		return false;
@@ -297,10 +309,14 @@ public class Commands {
 						
 					} else if (args[1].equalsIgnoreCase("info")){ 
 						player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "Info for shop " + ChatColor.WHITE + shop.getShopName());
-						String location = "" + shop.getLocation()[0];
-						location +=  " " + shop.getLocation()[1];
-						location += " " + shop.getLocation()[2];
-						player.sendMessage( ChatColor.AQUA + "  Shop Location " + ChatColor.WHITE + location);
+						String location = "" + shop.getLocation1()[0];
+						location +=  " " + shop.getLocation1()[1];
+						location += " " + shop.getLocation1()[2];
+						player.sendMessage( ChatColor.AQUA + "  Shop Location 1 " + ChatColor.WHITE + location);
+						location = "" + shop.getLocation2()[0];
+						location +=  " " + shop.getLocation2()[1];
+						location += " " + shop.getLocation2()[2];
+						player.sendMessage( ChatColor.AQUA + "  Shop Location 2 " + ChatColor.WHITE + location);
 						player.sendMessage( ChatColor.AQUA + "  Shop Owner " + ChatColor.WHITE + shop.getShopOwner());
 						String message = "";
 						if(shop.getShopManagers() != null) {

@@ -8,9 +8,15 @@ import java.util.Iterator;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 import cuboidLocale.BookmarkedResult;
@@ -28,6 +34,31 @@ public class ShopsPlayerListener extends PlayerListener {
 		plugin = instance;
 	}
 
+	@Override
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if(event.isCancelled()) return;
+		
+		Player player = event.getPlayer();
+		String playerName = player.getName();
+		if(!plugin.playerData.containsKey(playerName)) {
+			plugin.playerData.put(playerName, new PlayerData());
+		}
+		
+		if(plugin.playerData.get(playerName).isSelecting) {
+			if(event.getAction() == Action.LEFT_CLICK_BLOCK) {
+				long[] xyz = { event.getClickedBlock().getX(), event.getClickedBlock().getY(), event.getClickedBlock().getZ() };
+				plugin.playerData.get(playerName).setPositionA(xyz);
+				player.sendMessage("First Position " + xyz[0] + " " + xyz[1] + " " + xyz[2]);
+			} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				long[] xyz = { event.getClickedBlock().getX(), event.getClickedBlock().getY(), event.getClickedBlock().getZ() };
+				plugin.playerData.get(playerName).setPositionB(xyz);
+				player.sendMessage("Second Position " + xyz[0] + " " + xyz[1] + " " + xyz[2]);
+			}
+			
+		}
+		
+	}
+	
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
