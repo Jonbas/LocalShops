@@ -25,7 +25,7 @@ public class Commands {
 	static boolean createShop( CommandSender sender, String[] args ) {
 		//TODO Change this so that non players can create shops as long as they send x, y, z coords
 		if(canUseCommand(sender, args) && args.length == 2 && (sender instanceof Player)) {
-			//command format /shop create ShopName
+			//command format /lshop create ShopName
 			Player player = (Player)sender;
 			Location location = player.getLocation();
 			
@@ -134,7 +134,7 @@ public class Commands {
 			} 
 		}
 		if(args.length != 2) {
-			sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop create [ShopName]");
+			sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop create [ShopName]");
 		}
 		if(!canUseCommand(sender, args)) {
 			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
@@ -145,7 +145,7 @@ public class Commands {
 	static boolean moveShop( CommandSender sender, String[] args ) {
 		//TODO Change this so that non players can create shops as long as they send x, y, z coords
 		if(canUseCommand(sender, args) && args.length == 2 && (sender instanceof Player)) {
-			//command format /shop move ShopName
+			//command format /lshop move ShopName
 			Player player = (Player)sender;
 			Location location = player.getLocation();
 			Shop thisShop = null;
@@ -300,7 +300,7 @@ public class Commands {
 			}
 		}
 		if(args.length != 2) {
-			sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop move [ShopName]");
+			sender.sendMessage( PlayerData.chatPrefix + ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop move [ShopName]");
 		}
 		if(!canUseCommand(sender, args)) {
 			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
@@ -393,41 +393,41 @@ public class Commands {
 			if(canUseCommand(sender, "admins".split(""))) {
 				partial = "|info";
 			}
-			sender.sendMessage( ChatColor.WHITE + "   /shop list <buy|sell" + partial + "> " + ChatColor.AQUA + "- List the shop's inventory." );
-			sender.sendMessage( ChatColor.WHITE + "   /shop buy [itemname] [number] " + ChatColor.AQUA + "- Buy this item." );
-			sender.sendMessage( ChatColor.WHITE + "   /shop sell <#|all>" + ChatColor.AQUA + " - Sell the item in your hand." );
-			sender.sendMessage( ChatColor.WHITE + "   /shop sell [itemname] [number]" );
+			sender.sendMessage( ChatColor.WHITE + "   /lshop list <buy|sell" + partial + "> " + ChatColor.AQUA + "- List the shop's inventory." );
+			sender.sendMessage( ChatColor.WHITE + "   /lshop buy [itemname] [number] " + ChatColor.AQUA + "- Buy this item." );
+			sender.sendMessage( ChatColor.WHITE + "   /lshop sell <#|all>" + ChatColor.AQUA + " - Sell the item in your hand." );
+			sender.sendMessage( ChatColor.WHITE + "   /lshop sell [itemname] [number]" );
 		}
 		
 		String[] set = { "set" };
 		if(canUseCommand(sender, set)) {
-			sender.sendMessage( ChatColor.WHITE + "   /shop add" + ChatColor.AQUA + " - Add the item that you are holding to the shop.");
-			sender.sendMessage( ChatColor.WHITE + "   /shop remove [itemname]" + ChatColor.AQUA + " - Stop selling item in shop." );
-			sender.sendMessage( ChatColor.WHITE + "   /shop set" + ChatColor.AQUA + " - Display list of set commands" );
+			sender.sendMessage( ChatColor.WHITE + "   /lshop add" + ChatColor.AQUA + " - Add the item that you are holding to the shop.");
+			sender.sendMessage( ChatColor.WHITE + "   /lshop remove [itemname]" + ChatColor.AQUA + " - Stop selling item in shop." );
+			sender.sendMessage( ChatColor.WHITE + "   /lshop set" + ChatColor.AQUA + " - Display list of set commands" );
 			
 		}
 		
 		String[] create = { "create" };
 		if(canUseCommand(sender, create)) {
-			sender.sendMessage( ChatColor.WHITE + "   /shop create [ShopName]" + ChatColor.AQUA + " - Create a shop at your location.");
-			sender.sendMessage( ChatColor.WHITE + "   /shop select" + ChatColor.AQUA + " - Select two corners for custom shop size.");
+			sender.sendMessage( ChatColor.WHITE + "   /lshop create [ShopName]" + ChatColor.AQUA + " - Create a shop at your location.");
+			sender.sendMessage( ChatColor.WHITE + "   /lshop select" + ChatColor.AQUA + " - Select two corners for custom shop size.");
 			
 		}
 		
 		String[] move = { "move" };
 		if(canUseCommand(sender, move)) {
-			sender.sendMessage( ChatColor.WHITE + "   /shop move [ShopName]" + ChatColor.AQUA + " - Move a shop to your location.");
+			sender.sendMessage( ChatColor.WHITE + "   /lshop move [ShopName]" + ChatColor.AQUA + " - Move a shop to your location.");
 			
 		}
 		
 		String[] destroy = { "destroy" };
 		if(canUseCommand(sender, destroy)) {
-			sender.sendMessage( ChatColor.WHITE + "   /shop destroy" + ChatColor.AQUA + " - Destroy the shop you're in.");
+			sender.sendMessage( ChatColor.WHITE + "   /lshop destroy" + ChatColor.AQUA + " - Destroy the shop you're in.");
 		}
 		
 		String[] reload = { "reload" };
 		if(canUseCommand(sender, reload)) {
-			sender.sendMessage( ChatColor.WHITE + "   /shop reload" + ChatColor.AQUA + " - Reload the plugin and shop files.");
+			sender.sendMessage( ChatColor.WHITE + "   /lshop reload" + ChatColor.AQUA + " - Reload the plugin and shop files.");
 		}
 	}
 	
@@ -535,7 +535,7 @@ public class Commands {
 					printInventory( shop, player, "list", pageNumber );
 				}
 			} else {
-				player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop list");
+				player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /lshop list");
 			}
 		} else {
 			sender.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You don't have permission to use this command");
@@ -644,11 +644,11 @@ public class Commands {
 		if(!list) {
 			String buySell = ( buy ? "buy" : "sell" );
 			message = ChatColor.AQUA + "To " + buySell + " an item on the list type: " +
-				ChatColor.WHITE + "/shop " + buySell + " ItemName [amount]";
+				ChatColor.WHITE + "/lshop " + buySell + " ItemName [amount]";
 			player.sendMessage(message);
 		} else {
-			player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/shop list buy" 
-					+ ChatColor.AQUA + " or " + ChatColor.WHITE + "/shop list sell");
+			player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/lshop list buy" 
+					+ ChatColor.AQUA + " or " + ChatColor.WHITE + "/lshop list sell");
 			player.sendMessage(ChatColor.AQUA + "to see details about price and quantity.");
 		}
 	}
@@ -673,11 +673,11 @@ public class Commands {
 		}
 	
 		/* Available formats:
-		 *  /shop sell
-		 *  /shop sell #
-		 *  /shop sell all
-		 *  /shop sell item #
-		 *  /shop sell item all
+		 *  /lshop sell
+		 *  /lshop sell #
+		 *  /lshop sell all
+		 *  /lshop sell item #
+		 *  /lshop sell item all
 		 */
 		String shopName;
 		Shop shop;
@@ -695,16 +695,16 @@ public class Commands {
 			shopName = PlayerData.playerShopsList(playerName).get(0);
 			shop = ShopData.shops.get(shopName);
 		} else {
-			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /lshop " + args[0]);
 			return false;
 		}
 		
 		if(args.length == 1) {
-			// /shop sell
+			// /lshop sell
 		} else if(args.length == 2 ){
-			/*	/shop sell #
-			 *  /shop sell all
-			 *  /shop sell item 
+			/*	/lshop sell #
+			 *  /lshop sell all
+			 *  /lshop sell item 
 			 */
 			if(!args[1].equalsIgnoreCase("all")) {
 				try {
@@ -715,8 +715,8 @@ public class Commands {
 				}
 			}
 		} else if(args.length == 3 ) {
-			/*	/shop sell item #
-			 *  /shop sell item all
+			/*	/lshop sell item #
+			 *  /lshop sell item all
 			 */
 			item = LocalShops.itemList.getShopItem(player, shop, args[1]);
 			itemName = null;
@@ -733,7 +733,7 @@ public class Commands {
 		}
 		
 		if(item == null && itemName == null) {
-			player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop sell <itemName> <# to sell>");
+			player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/lshop sell <itemName> <# to sell>");
 			return false;
 		}
 		
@@ -820,7 +820,7 @@ public class Commands {
 		} else {
 			if( !isShopController(player, shop )) {
 				if(!PlayerData.payPlayer(shop.getShopOwner(), playerName, totalCost)) {
-					//shop owner doesn't have enough money
+					//lshop owner doesn't have enough money
 					//get shop owner's balance and calculate how many it can buy
 					long shopBalance = PlayerData.getBalance(shop.getShopOwner());
 					int bundlesCanAford = (int)shopBalance / itemPrice;
@@ -877,12 +877,12 @@ public class Commands {
 		}
 //TODO		
 		/* Available formats:
-		 *  /shop add
-		 *  /shop add #
-		 *  /shop add all
-		 *  /shop add item
-		 *  /shop add item #
-		 *  /shop add item all
+		 *  /lshop add
+		 *  /lshop add #
+		 *  /lshop add all
+		 *  /lshop add item
+		 *  /lshop add item #
+		 *  /lshop add item all
 		 */
 		
 		String shopName;
@@ -908,16 +908,16 @@ public class Commands {
 			}
 			
 		} else {
-			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /lshop " + args[0]);
 			return false;
 		}
 		
 		if(args.length == 1) {
-			// /shop add
+			// /lshop add
 		} else if(args.length == 2 ){
-			/*	/shop add #
-			 *  /shop add all
-			 *  /shop add item 
+			/*	/lshop add #
+			 *  /lshop add all
+			 *  /lshop add item 
 			 */
 			if(!args[1].equalsIgnoreCase("all")) {
 				try {
@@ -928,8 +928,8 @@ public class Commands {
 				}
 			}
 		} else if(args.length == 3 ) {
-			/*	/shop add item #
-			 *  /shop add item all
+			/*	/lshop add item #
+			 *  /lshop add item all
 			 */
 			item = LocalShops.itemList.getItem(player, args[1]);
 			itemName = null;
@@ -946,7 +946,7 @@ public class Commands {
 		}
 		
 		if(item == null && itemName == null) {
-			player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop add <itemName> <# to sell>");
+			player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/lshop add <itemName> <# to sell>");
 			return false;
 		}
 		
@@ -1058,7 +1058,7 @@ public class Commands {
 		}
 		
 		/* Available formats:
-		 *  /shop buy item #
+		 *  /lshop buy item #
 		 */
 		
 		Player player = (Player)sender;
@@ -1131,13 +1131,13 @@ public class Commands {
 					if( args[2].equalsIgnoreCase("all")) {
 						amount = totalAmount;
 					} else {
-						player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop buy <itemName> <# to buy>");
+						player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/lshop buy <itemName> <# to buy>");
 						return false;
 					}
 				}
 				
 			} else {
-				player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/shop buy <itemName> <# to buy>");
+				player.sendMessage(ChatColor.AQUA + "Input problem. The format is " + ChatColor.WHITE + "/lshop buy <itemName> <# to buy>");
 				return false;
 			}
 			
@@ -1204,7 +1204,7 @@ public class Commands {
 			ShopData.saveShop(shop);
 
 		} else {
-			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /lshop " + args[0]);
 		}
 			
 		return true;
@@ -1226,11 +1226,11 @@ public class Commands {
 		}
 		
 		/* Available formats:
-		 *  /shop set buy itemName price stackSize
-		 *  /shop set sell itemName price stackSize
-		 *  /shop set max itemName amount
-		 *  /shop set manager +managerName +managerName -managerName
-		 *  /shop set owner ownerName
+		 *  /lshop set buy itemName price stackSize
+		 *  /lshop set sell itemName price stackSize
+		 *  /lshop set max itemName amount
+		 *  /lshop set manager +managerName +managerName -managerName
+		 *  /lshop set owner ownerName
 		 */
 		
 		Player player = (Player)sender;
@@ -1256,7 +1256,7 @@ public class Commands {
 			
 			
 			if( args[1].equalsIgnoreCase("buy")) {
-				//  /shop set buy ItemName Price <bundle size>
+				//  /lshop set buy ItemName Price <bundle size>
 				
 				ItemStack item = null;
 				String itemName = null;
@@ -1276,7 +1276,7 @@ public class Commands {
 				
 					if(!shop.getItems().contains(itemName)) {
 						player.sendMessage(ChatColor.AQUA + "Shop is not yet selling " + ChatColor.WHITE + itemName );
-						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/shop add");
+						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/lshop add");
 						return false;
 					}
 					
@@ -1290,7 +1290,7 @@ public class Commands {
 						}
 					} catch(NumberFormatException ex1) {
 						player.sendMessage(ChatColor.AQUA + "The price and bundle size must be a number." );
-						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set buy [item name] [price] <bundle size>");
+						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop set buy [item name] [price] <bundle size>");
 						return false;
 					}
 					
@@ -1305,13 +1305,13 @@ public class Commands {
 					ShopData.saveShop(shop);
 					
 				} else {
-					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set buy [item name] [price] <bundle size>");
+					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop set buy [item name] [price] <bundle size>");
 					return true;
 				}
 				
 			} else if ( args[1].equalsIgnoreCase("sell")) {
 				
-				//  /shop set sell ItemName Price <bundle size>
+				//  /lshop set sell ItemName Price <bundle size>
 				
 				ItemStack item = null;
 				String itemName = null;
@@ -1331,7 +1331,7 @@ public class Commands {
 				
 					if(!shop.getItems().contains(itemName)) {
 						player.sendMessage(ChatColor.AQUA + "Shop is not yet buying " + ChatColor.WHITE + itemName );
-						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/shop add");
+						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/lshop add");
 						return false;
 					}
 					
@@ -1345,7 +1345,7 @@ public class Commands {
 						}
 					} catch(NumberFormatException ex1) {
 						player.sendMessage(ChatColor.AQUA + "The price and bundle size must be a number." );
-						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set sell [item name] [price] <bundle size>");
+						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop set sell [item name] [price] <bundle size>");
 						return false;
 					}
 					
@@ -1361,13 +1361,13 @@ public class Commands {
 							+ bundle + ChatColor.AQUA + "]");
 					
 				} else {
-					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set sell [item name] [price] <bundle size>");
+					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop set sell [item name] [price] <bundle size>");
 					return true;
 				}
 
 			} else if ( args[1].equalsIgnoreCase("max")) {
 				
-				//  /shop set max ItemName amount
+				//  /lshop set max ItemName amount
 				
 				ItemStack item = null;
 				String itemName = null;
@@ -1387,7 +1387,7 @@ public class Commands {
 				
 					if(!shop.getItems().contains(itemName)) {
 						player.sendMessage(ChatColor.AQUA + "Shop is not yet buying " + ChatColor.WHITE + itemName );
-						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/shop add");
+						player.sendMessage(ChatColor.AQUA + "To add the item use " + ChatColor.WHITE + "/lshop add");
 						return false;
 					}
 					
@@ -1395,7 +1395,7 @@ public class Commands {
 						maxStock = Integer.parseInt(args[3]);
 					} catch(NumberFormatException ex1) {
 						player.sendMessage(ChatColor.AQUA + "The price and bundle size must be a number." );
-						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set sell [item name] [price] <bundle size>");
+						player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop set sell [item name] [price] <bundle size>");
 						return false;
 					}
 					
@@ -1408,7 +1408,7 @@ public class Commands {
 					
 					
 				} else {
-					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop set max [item name] [amount]");
+					player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop set max [item name] [amount]");
 					return true;
 				}
 				
@@ -1501,27 +1501,27 @@ public class Commands {
 						}
 					} 
 					player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "The following set commands are available: ");
-					player.sendMessage("   " + "/shop set unlimited money");
-					player.sendMessage("   " + "/shop set unlimited stock");
+					player.sendMessage("   " + "/lshop set unlimited money");
+					player.sendMessage("   " + "/lshop set unlimited stock");
 					return true;
 				}
 			} else {
 				player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "The following set commands are available: ");
-				player.sendMessage("   " + "/shop set buy [item name] [price] <bundle size>");
-				player.sendMessage("   " + "/shop set sell [item name] [price] <bundle size>");
-				player.sendMessage("   " + "/shop set max [item name] [max number]");
-				player.sendMessage("   " + "/shop set manager +[playername] -[playername2]");
-				player.sendMessage("   " + "/shop set owner [player name]");
+				player.sendMessage("   " + "/lshop set buy [item name] [price] <bundle size>");
+				player.sendMessage("   " + "/lshop set sell [item name] [price] <bundle size>");
+				player.sendMessage("   " + "/lshop set max [item name] [max number]");
+				player.sendMessage("   " + "/lshop set manager +[playername] -[playername2]");
+				player.sendMessage("   " + "/lshop set owner [player name]");
 				if(canUseCommand(player, "admin".split(""))) {
-					player.sendMessage("   " + "/shop set unlimited money");
-					player.sendMessage("   " + "/shop set unlimited stock");
+					player.sendMessage("   " + "/lshop set unlimited money");
+					player.sendMessage("   " + "/lshop set unlimited stock");
 				}
 			}
 
 			ShopData.saveShop(shop);
 
 		} else {
-			player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			player.sendMessage(PlayerData.chatPrefix + ChatColor.AQUA + "You must be inside a shop to use /lshop " + args[0]);
 			return false;
 		}
 			
@@ -1545,7 +1545,7 @@ public class Commands {
 		}
 		
 		/* Available formats:
-		 *  /shop remove itemName
+		 *  /lshop remove itemName
 		 */
 		
 		Player player = (Player)sender;
@@ -1563,7 +1563,7 @@ public class Commands {
 			}
 
 			if( args.length != 2) {
-				player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/shop remove [item name]");
+				player.sendMessage(ChatColor.AQUA + "The command format is " + ChatColor.WHITE + "/lshop remove [item name]");
 				return false;
 			}
 			
@@ -1599,7 +1599,7 @@ public class Commands {
 			ShopData.saveShop(shop);
 
 		} else {
-			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /lshop " + args[0]);
 		}
 			
 		return true;
@@ -1621,7 +1621,7 @@ public class Commands {
 		}
 		
 		/* Available formats:
-		 *  /shop destroy
+		 *  /lshop destroy
 		 */
 		
 		Player player = (Player)sender;
@@ -1644,7 +1644,7 @@ public class Commands {
 			
 
 		} else {
-			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /shop " + args[0]);
+			player.sendMessage(ChatColor.AQUA + "You must be inside a shop to use /lshop " + args[0]);
 		}
 			
 		return true;

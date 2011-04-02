@@ -6,7 +6,7 @@ description: >
              A localized shop plugin for use with iConomy.
              Users can create and manage their own shops.
 commands:
-  shop:
+  lshop:
     description: Command for managing shops 
     usage: |
            /<command> - displays command help

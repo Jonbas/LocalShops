@@ -154,7 +154,7 @@ public class LocalShops extends JavaPlugin {
 		String[] trimmedArgs = args;
 		String commandName = command.getName().toLowerCase();
 
-		if (commandName.equalsIgnoreCase("shop")) {
+		if (commandName.equalsIgnoreCase("lshop")) {
 			if(args.length >= 1) {
 				if(args[0].equalsIgnoreCase("create")) {
 					Commands.createShop(sender, trimmedArgs);
