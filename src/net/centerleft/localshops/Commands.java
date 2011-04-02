@@ -710,7 +710,7 @@ public class Commands {
 				try {
 					amount = Integer.parseInt(args[1]);
 				} catch( NumberFormatException ex1 ) {
-					item = LocalShops.itemList.getItem(player, args[1]);
+					item = LocalShops.itemList.getShopItem(player, shop, args[1]);
 					itemName = null;
 				}
 			}
@@ -718,7 +718,7 @@ public class Commands {
 			/*	/shop sell item #
 			 *  /shop sell item all
 			 */
-			item = LocalShops.itemList.getItem(player, args[1]);
+			item = LocalShops.itemList.getShopItem(player, shop, args[1]);
 			itemName = null;
 			if(!args[2].equalsIgnoreCase("all")) {
 				try {
