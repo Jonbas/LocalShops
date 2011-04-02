@@ -61,7 +61,7 @@ public class PlayerData {
 			if( width1 > ShopData.maxWidth || width2 > ShopData.maxWidth || height > ShopData.maxHeight ) {
 				return false;
 			} else {
-				return false;
+				return true;
 			}
 		}
 		return false;
@@ -110,9 +110,8 @@ public class PlayerData {
 				account = ic.getBank().getAccount(playerName);
 			}
 			double balance = account.getBalance();
-			balance += (double)cost;
-			account.setBalance(balance);
-			account.save();
+			account.setBalance(balance + (double)cost);
+			ShopData.logPayment(playerName, "payment", cost, balance, balance + (double)cost);
 			return true; 
 		}
 		return false;
@@ -137,15 +136,12 @@ public class PlayerData {
 			double balanceTo = accountTo.getBalance();
 			
 			if( balanceFrom < cost ) return false;
+
 			
-			balanceFrom -= cost;
-			balanceTo += cost;
-			
-			accountFrom.setBalance(balanceFrom);
-			accountTo.setBalance(balanceTo);
-			
-			accountFrom.save();
-			accountTo.save();
+			accountFrom.setBalance(balanceFrom - cost);
+			ShopData.logPayment(playerFrom, "payment", cost, balanceFrom, balanceFrom + cost);
+			accountTo.setBalance(balanceTo + cost);
+			ShopData.logPayment(playerTo, "payment", cost, balanceTo, balanceTo + cost);
 			return true; 
 		}
 		return false;
@@ -178,10 +174,10 @@ public class PlayerData {
 				account = ic.getBank().getAccount(shopOwner);
 			}
 			double balanceFrom = account.getBalance();
-			long newBalance = (long)Math.floor(balanceFrom) - chargeAmount;
+			double newBalance = balanceFrom - chargeAmount;
 			if(balanceFrom >= chargeAmount) {
 				account.setBalance(newBalance);
-				account.save();
+				ShopData.logPayment(shopOwner, "payment", chargeAmount, balanceFrom, newBalance);
 				return true;
 			} else {
 				return false;

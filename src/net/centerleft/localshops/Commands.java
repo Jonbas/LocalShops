@@ -848,6 +848,12 @@ public class Commands {
 					+ " " + ShopData.currencyName); 
 		}
 		
+		//log the transaction
+		int itemInv = shop.getItemStock(itemName);
+		int startInv = itemInv - amount;
+		if( startInv < 0 ) startInv = 0;
+		ShopData.logItems(playerName, shopName, "sell-item", itemName, amount, startInv, itemInv );
+		
 		removeItemsFromInventory(player.getInventory(), item, amount);		
 		ShopData.saveShop(shop);
 		
@@ -999,6 +1005,13 @@ public class Commands {
 					+ ChatColor.AQUA + " to the shop.");
 		}
 		
+		//log the transaction
+		int itemInv = shop.getItemStock(itemName);
+		int startInv = itemInv - amount;
+		if( startInv < 0 ) startInv = 0;
+		ShopData.logItems(playerName, shopName, "add-item", itemName, amount, startInv, itemInv );
+		
+		//take items from player
 		removeItemsFromInventory(player.getInventory(), item, amount);		
 		ShopData.saveShop(shop);
 		
@@ -1181,9 +1194,13 @@ public class Commands {
 						+ itemName + ChatColor.AQUA + " for " + ChatColor.WHITE + totalCost + " " + ShopData.currencyName); 
 			}
 			
-			givePlayerItem(player, item, amount);
+			//log the transaction
+			int itemInv = shop.getItemStock(itemName);
+			int startInv = itemInv + amount;
+			if( shop.isUnlimitedStock() ) startInv = 0;
+			ShopData.logItems(playerName, shopName, "buy-item", itemName, amount, startInv, itemInv );
 			
-
+			givePlayerItem(player, item, amount);
 			ShopData.saveShop(shop);
 
 		} else {
@@ -1570,6 +1587,10 @@ public class Commands {
 			player.sendMessage(ChatColor.WHITE + itemName + ChatColor.AQUA + " removed from the shop. " );
 			if(!shop.isUnlimitedStock()) {
 				int amount = shop.getItemStock(itemName);
+				
+				//log the transaction
+				ShopData.logItems(playerName, shopName, "remove-item", itemName, amount, amount, 0 );
+				
 				givePlayerItem(player, item, amount);
 				player.sendMessage("" + ChatColor.WHITE + amount + ChatColor.AQUA + " have been returned to your inventory"); 
 			}

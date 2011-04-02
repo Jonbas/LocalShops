@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -19,9 +17,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
-
 import com.nijiko.coelho.iConomy.iConomy;
-import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 import cuboidLocale.BookmarkedResult;
@@ -210,8 +206,8 @@ public class LocalShops extends JavaPlugin {
 						playerData.get(playerName).isSelecting = !playerData.get(playerName).isSelecting;
 						
 						if(playerData.get(playerName).isSelecting) {
-							sender.sendMessage(ChatColor.AQUA + "Right click to select the first corner for a shop.");
-							sender.sendMessage(ChatColor.AQUA + "Left click to select the second corner for the shop.");
+							sender.sendMessage(ChatColor.AQUA + "Left click to select the first corner for a shop.");
+							sender.sendMessage(ChatColor.AQUA + "Right click to select the second corner for the shop.");
 						} else {
 							sender.sendMessage(ChatColor.AQUA + "Selection disabled");
 							playerData.put(playerName, new PlayerData());

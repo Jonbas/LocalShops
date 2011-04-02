@@ -496,4 +496,84 @@ public class ShopData {
 		}
 		return false;
 	}
+	
+	public static boolean logItems(String playerName, String shopName, String action, String itemName,
+			int numberOfItems, int startNumberOfItems, int endNumberOfItems) {
+		
+		return logTransaciton(playerName, shopName, action, itemName, numberOfItems, 
+				startNumberOfItems, endNumberOfItems, 0, 0, 0);
+		
+	}
+	
+	public static boolean logPayment(String playerName, String action, double moneyTransfered,
+			double startingbalance, double endingbalance) {
+		
+		return logTransaciton( playerName, null, action, null, 0, 0, 0, 
+				moneyTransfered, startingbalance, endingbalance);
+	}
+	
+	public static boolean logTransaciton(String playerName, String shopName, String action, String itemName,
+			int numberOfItems, int startNumberOfItems, int endNumberOfItems, double moneyTransfered,
+			double startingbalance, double endingbalance) {
+		if(!logTransactions) return false;
+		
+		String filePath = LocalShops.folderPath + "transactions.log";
+
+		File logFile = new File(filePath);
+		try {
+
+			logFile.createNewFile();
+
+			String fileOutput = "";
+
+			DateFormat dateFormat = new SimpleDateFormat(
+					"yyyy/MM/dd HH:mm:ss z");
+			Date date = new Date();
+			fileOutput += dateFormat.format(date) + ": ";
+			fileOutput += "Action: ";
+			if(action != null) fileOutput += action;
+			fileOutput += ": ";
+			fileOutput += "Player: ";
+			if(playerName != null) fileOutput += playerName;
+			fileOutput += ": ";
+			fileOutput += "Shop: ";
+			if(shopName != null) fileOutput += shopName;
+			fileOutput += ": ";
+			fileOutput += "Item Type: ";
+			if(itemName != null) fileOutput += itemName;
+			fileOutput += ": ";
+			fileOutput += "Number Transfered: ";
+			fileOutput += numberOfItems;
+			fileOutput += ": ";
+			fileOutput += "Stating Stock: ";
+			fileOutput += startNumberOfItems;
+			fileOutput += ": ";
+			fileOutput += "Ending Stock: ";
+			fileOutput += endNumberOfItems;
+			fileOutput += ": ";
+			fileOutput += "Money Transfered: ";
+			fileOutput += moneyTransfered;
+			fileOutput += ": ";
+			fileOutput += "Starting balance: ";
+			fileOutput += startingbalance;
+			fileOutput += ": ";
+			fileOutput += "Ending balance: ";
+			fileOutput += endingbalance;
+			fileOutput += ": ";
+			fileOutput += "\n";
+			
+			
+			FileOutputStream logFileOut = new FileOutputStream(logFile, true);
+			logFileOut.write(fileOutput.getBytes());
+			logFileOut.close();
+			
+			
+		} catch (IOException e1) {
+			System.out.println(LocalShops.pluginName
+					+ ": Error - Could not write to file " + logFile.getName());
+			return false;
+		}
+		
+		return true;
+	}
 }
